@@ -21,6 +21,12 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
    npm run fetch
    ```
 
+4. **Process content (extract and chunk)**:
+   ```bash
+   npm run chunk     # Chunk content only
+   npm run process   # Complete processing pipeline
+   ```
+
 ## 📁 Project Structure
 
 ```
@@ -33,7 +39,8 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
       db.ts            # SQLite database client (TODO)
     /workers
       fetcher.ts       # RSS item fetcher ✅
-      chunker.ts       # Content chunking (TODO)
+      chunker.ts       # Content extraction & chunking ✅
+      processor.ts     # Processing pipeline orchestrator ✅
       embedder.ts      # Text embedding (TODO)
       retriever.ts     # Vector retrieval (TODO)
       summarizer.ts    # Content summarization (TODO)
@@ -43,13 +50,16 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
       app.ts           # Web API server (TODO)
   /data
     /raw               # Raw RSS items ✅
+    /chunks            # Processed content chunks ✅
     metadb.sqlite      # Metadata database (TODO)
   feeds.json           # RSS feed configuration ✅
 ```
 
-## ✅ Implemented Features (Stage 1)
+## ✅ Implemented Features
 
-### RSS Client (`src/lib/rssClient.ts`)
+### Stage 1: RSS Fetching ✅
+
+#### RSS Client (`src/lib/rssClient.ts`)
 
 - **Feed Management**: Configure RSS feeds via `feeds.json`
 - **Robust Parsing**: Parse RSS/Atom feeds with error handling
@@ -72,12 +82,73 @@ const items = await client.getRecentItems(24);
 await client.saveRawItems(items);
 ```
 
-### RSS Fetcher (`src/workers/fetcher.ts`)
+#### RSS Fetcher (`src/workers/fetcher.ts`)
 
 - **Automated Fetching**: Run `npm run fetch` to collect recent RSS items
 - **Configuration**: Loads feed URLs from `feeds.json`
 - **Error Handling**: Graceful handling of failed feeds
 - **Logging**: Detailed logging of fetch operations
+
+### Stage 2: Content Extraction & Chunking ✅
+
+#### Content Chunker (`src/workers/chunker.ts`)
+
+- **Full Article Fetching**: Automatically fetches complete article content from URLs when RSS snippets are too short
+- **Intelligent Text Extraction**: Uses JSDOM to parse HTML and extract clean text content
+- **Smart Chunking Algorithm**: 
+  - Splits content into ~1500 character chunks with 150-character overlap
+  - Breaks at paragraph, sentence, or line boundaries for better context preservation
+  - Maintains content relationships between chunks
+- **Enhanced Chunk IDs**: Format: `{clean-url}-{chunk-number}-of-{total-chunks}`
+- **Robust Error Handling**: 10-second timeouts, graceful fallbacks, comprehensive logging
+- **Comprehensive Metadata**: Tracks word count, character count, source links, and timestamps
+
+#### Processing Pipeline (`src/workers/processor.ts`)
+
+- **Orchestrated Processing**: Coordinates the complete content processing workflow
+- **Stage Management**: Currently handles chunking, ready for future embedding and vector stages
+- **Progress Tracking**: Detailed logging and progress reporting
+
+#### Usage Examples:
+
+```typescript
+import { chunkContent } from './src/workers/chunker.js';
+
+// Chunk content with full article fetching (default)
+const result = await chunkContent();
+
+// Chunk content without fetching full articles
+const result = await chunkContent(undefined, false);
+
+// Process specific RSS file
+const result = await chunkContent('./data/raw/specific-file.json');
+```
+
+#### Chunk Data Structure:
+
+```json
+{
+  "totalItems": 71,
+  "totalChunks": 227,
+  "chunks": [
+    {
+      "id": "arstechnica.com-tech-policy-2025-11-article-title--1-of-8",
+      "chunkIndex": 0,
+      "content": "Full article text chunk...",
+      "wordCount": 211,
+      "charCount": 1352,
+      "sourceItem": {
+        "id": "original-rss-id",
+        "title": "Article Title",
+        "link": "https://...",
+        "pubDate": "2025-11-24T...",
+        "source": "Source Name",
+        "categories": ["tag1", "tag2"]
+      },
+      "timestamp": "2025-11-24T22:41:39.917Z"
+    }
+  ]
+}
 
 ## 📝 Configuration
 
@@ -87,6 +158,10 @@ await client.saveRawItems(items);
 # Fetch Configuration
 FETCH_HOURS_BACK=24
 DATA_DIR=./data
+
+# Content Processing
+CHUNK_SIZE=1500
+CHUNK_OVERLAP=150
 
 # API Keys (for future stages)
 LLM_API_KEY=your_openai_api_key
@@ -115,6 +190,8 @@ VECTOR_DB_URL=http://localhost:6333
 ```bash
 npm run dev       # Start development server
 npm run fetch     # Fetch RSS items
+npm run chunk     # Extract and chunk content
+npm run process   # Complete processing pipeline
 npm run build     # Build TypeScript
 npm run lint      # Run ESLint
 npm run test      # Run tests (TODO)
@@ -124,24 +201,46 @@ npm run test      # Run tests (TODO)
 
 - ✅ **Stage 0**: Project setup and skeleton
 - ✅ **Stage 1**: RSS fetcher implementation
-- 🔄 **Stage 2**: Content extraction & chunking (TODO)
+- ✅ **Stage 2**: Content extraction & chunking with full article fetching
 - 🔄 **Stage 3**: Embeddings & vector upsert (TODO)
 - 🔄 **Stage 4**: Retrieval, clustering & summarization (TODO)
 
+### Stage 2 Results
+- **Average improvement**: 227 chunks vs 40 chunks (5.7x more content)
+- **Content quality**: Average chunk size increased from 132 to 1,150 characters
+- **Article success rate**: ~50% full articles fetched successfully
+- **Supported sites**: Excellent support for Ars Technica, partial for WIRED (CSS parsing issues)
+- **Chunk ID format**: `{clean-url}-{chunk-num}-of-{total-chunks}`
+
 ## 🧪 Testing
 
+### RSS Client Testing
 The RSS client has been tested with multiple feed sources and handles:
 - Network timeouts and connection errors
 - Invalid RSS/Atom feeds
 - Time-based filtering
 - Data persistence and retrieval
 
+### Content Processing Testing
+The chunker has been tested with:
+- Various article lengths (from 100 chars to 56KB)
+- Different website structures (Ars Technica, WIRED, external sites)
+- Error handling for failed article fetches
+- Intelligent text extraction and cleaning
+- Chunk boundary optimization for readability
+
 ## 📋 Next Steps
 
-1. Implement content chunking worker
+1. ✅ ~~Implement content chunking worker~~
 2. Add LLM client for embeddings
 3. Set up vector database integration
 4. Implement retrieval and clustering logic
 5. Build summarization pipeline
+
+### Immediate Next: Stage 3 - Embeddings & Vector Upsert
+- Implement OpenAI embeddings API client
+- Set up Qdrant or Pinecone vector database
+- Create embedding pipeline for processed chunks
+- Implement vector similarity search
 
 For detailed implementation plan, see [PLAN.md](./PLAN.md).
