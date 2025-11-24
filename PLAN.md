@@ -68,7 +68,7 @@ SCHEDULE_CRON="0 7 * * *"
 
 ---
 
-### **Stage 1 — RSS Fetcher**
+### **Stage 1 — RSS Fetcher** ✅ 
 1. Implement `rssClient.ts` using a Node.js RSS parser (e.g., `rss-parser`).
 2. Maintain a feed URL list in `.env` or `feeds.json`.
 3. Fetch recent items from all feeds.
