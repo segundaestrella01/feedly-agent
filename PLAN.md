@@ -60,7 +60,7 @@ SCHEDULE_CRON="0 7 * * *"
 
 # 🏗 Step-by-Step Guide
 
-### **Stage 0 — Repo & Skeleton**
+### **Stage 0 — Repo & Skeleton** ✅ 
 1. Initialize repo and install dependencies.
 2. Create `.env` with variables above.
 3. Create project folder structure.
