@@ -1,0 +1,9 @@
+FEEDLY_TOKEN=...
+LLM_API_KEY=...
+EMBEDDING_MODEL=text-embedding-3-small
+LLM_MODEL=gpt-4o-mini
+VECTOR_DB_URL=http://localhost:6333
+METADB_URL=sqlite:./data/metadb.sqlite
+SMTP_URL=smtp://user:pass@smtp.server:587
+APP_SECRET=some_random_secret
+SCHEDULE_CRON="0 7 * * *"
