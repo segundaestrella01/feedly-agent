@@ -76,7 +76,7 @@ SCHEDULE_CRON="0 7 * * *"
 5. Acceptance: `npm run fetch` stores recent RSS items.
 ---
 
-### **Stage 2 — Content Extraction & Chunking**
+### **Stage 2 — Content Extraction & Chunking** ✅ 
 1. Extract full text from RSS items (use content field or fetch article URL + extract text).
 2. Implement `chunker.ts` to split text (~1500 chars/chunk).
 3. Save chunks with metadata in DB or JSON.
