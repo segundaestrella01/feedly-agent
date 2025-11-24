@@ -1,6 +1,7 @@
 {
   "name": "feedly-agent",
   "version": "1.0.0",
+  "type": "module",
   "description": "RSS content aggregator and summarizer: RAG-based retrieval, clustering, and daily digest generation.",
   "main": "dist/index.js",
   "scripts": {
