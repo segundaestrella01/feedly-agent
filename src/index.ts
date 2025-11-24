@@ -11,6 +11,4 @@ async function main() {
   createApp();
 }
 
-if (require.main === module) {
-  main().catch(console.error);
-}
+main().catch(console.error);

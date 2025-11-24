@@ -4,6 +4,4 @@ export function createApp() {
   console.log('Creating API app...');
 }
 
-if (require.main === module) {
   createApp();
-}
