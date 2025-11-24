@@ -120,7 +120,7 @@ async function fetchArticleContent(url: string): Promise<string> {
     
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       },
       signal: controller.signal,
     });
@@ -159,7 +159,7 @@ async function fetchArticleContent(url: string): Promise<string> {
         const nonContentSelectors = [
           '.sidebar', '.navigation', '.nav', '.menu', '.header', '.footer',
           '.advertisement', '.ads', '.social', '.share', '.comments',
-          '.related', '.newsletter', '.popup', '.modal'
+          '.related', '.newsletter', '.popup', '.modal',
         ];
         
         nonContentSelectors.forEach(selector => {
@@ -198,7 +198,7 @@ async function fetchArticleContent(url: string): Promise<string> {
 /**
  * Extract and clean text content from RSS item with optional full article fetch
  */
-async function extractFullTextContent(item: RSSItem, fetchFullArticle: boolean = true): Promise<string> {
+async function extractFullTextContent(item: RSSItem, fetchFullArticle = true): Promise<string> {
   // Start with RSS content
   let text = extractTextContent(item);
   
