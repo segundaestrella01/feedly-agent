@@ -68,15 +68,16 @@ SCHEDULE_CRON="0 7 * * *"
 
 ---
 
-### **Stage 1 — Feedly Fetcher**
-1. Implement `feedlyClient.ts` with authenticated call to fetch unread items.
-2. Save JSON responses in `/data/raw` and metadata in SQLite `items` table.
-3. Acceptance: `npm run fetch` stores recent items.
-
+### **Stage 1 — RSS Fetcher**
+1. Implement `rssClient.ts` using a Node.js RSS parser (e.g., `rss-parser`).
+2. Maintain a feed URL list in `.env` or `feeds.json`.
+3. Fetch recent items from all feeds.
+4. Save raw items to `/data/raw` and metadata in SQLite `items` table.
+5. Acceptance: `npm run fetch` stores recent RSS items.
 ---
 
 ### **Stage 2 — Content Extraction & Chunking**
-1. Extract main text from Feedly items or article URLs.
+1. Extract full text from RSS items (use content field or fetch article URL + extract text).
 2. Implement `chunker.ts` to split text (~1500 chars/chunk).
 3. Save chunks with metadata in DB or JSON.
 4. Acceptance: Chunks exist in `/data/chunks/`.
@@ -165,7 +166,7 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
 ---
 
 # 📝 Acceptance Criteria (MVP)
-- `npm run fetch` retrieves Feedly items.  
+- `npm run fetch` retrieves RSS items.  
 - `npm run process` chunks + embeds + upserts vectors.  
 - `npm run digest` produces digest with 3–6 clusters + links.  
 - Feedback updates preferences and affects future ranking.  
@@ -175,7 +176,7 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
 
 # ✅ Next Immediate Tasks
 1. Initialize repo and install deps (Stage 0).  
-2. Implement & test Feedly fetcher.  
+2. Implement & test RSS fetcher.  
 3. Chunk 5 items locally.  
 4. Wire embedding + vector upsert and verify nearest neighbors.  
 5. Implement retrieval + LLM summarization for single digest run.
