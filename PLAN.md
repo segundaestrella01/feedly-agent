@@ -1,6 +1,6 @@
-# Feedly Learning-Resources AI Agent (RAG-based)
+# RSS Learning-Resources AI Agent (RAG-based)
 
-A personal AI assistant that fetches your Feedly feeds, embeds and clusters content, and generates a daily digest tailored to your interests using a Retrieval-Augmented Generation (RAG) workflow.
+A personal AI assistant that fetches RSS feeds, embeds and clusters content, and generates a daily digest tailored to your interests using a Retrieval-Augmented Generation (RAG) workflow.
 
 ---
 
@@ -16,7 +16,6 @@ A personal AI assistant that fetches your Feedly feeds, embeds and clusters cont
 
 ### `.env` (minimum)
 ```
-FEEDLY_TOKEN=...
 LLM_API_KEY=...
 EMBEDDING_MODEL=text-embedding-3-small
 LLM_MODEL=gpt-4o-mini
@@ -34,7 +33,7 @@ SCHEDULE_CRON="0 7 * * *"
 /project
   /src
     /lib
-      feedlyClient.ts
+      rssClient.ts
       llmClient.ts
       vectorClient.ts
       db.ts
@@ -53,6 +52,7 @@ SCHEDULE_CRON="0 7 * * *"
   package.json
   tsconfig.json
   .env
+  feeds.json
   docker-compose.yml (optional)
 ```
 
