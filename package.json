@@ -13,6 +13,7 @@
     "process": "tsx src/workers/processor.ts",
     "digest": "tsx src/workers/digestGenerator.ts",
     "test": "jest",
+    "test:embedding": "tsx src/scripts/testEmbedding.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit",
@@ -58,6 +59,7 @@
     "@types/jsdom": "^27.0.0",
     "dotenv": "^17.2.3",
     "jsdom": "^27.2.0",
+    "openai": "^6.9.1",
     "rss-parser": "^3.13.0"
   }
 }
