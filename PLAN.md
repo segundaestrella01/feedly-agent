@@ -60,7 +60,7 @@ SCHEDULE_CRON="0 7 * * *"
 
 # 🏗 Step-by-Step Guide
 
-### **Stage 0 — Repo & Skeleton** ✅ 
+### **Stage 0 — Content Processing -  Repo & Skeleton** ✅ 
 1. Initialize repo and install dependencies.
 2. Create `.env` with variables above.
 3. Create project folder structure.
@@ -68,7 +68,7 @@ SCHEDULE_CRON="0 7 * * *"
 
 ---
 
-### **Stage 1 — RSS Fetcher** ✅ 
+### **Stage 1 — Content Processing - RSS Fetcher** ✅ 
 1. Implement `rssClient.ts` using a Node.js RSS parser (e.g., `rss-parser`).
 2. Maintain a feed URL list in `.env` or `feeds.json`.
 3. Fetch recent items from all feeds.
@@ -76,7 +76,7 @@ SCHEDULE_CRON="0 7 * * *"
 5. Acceptance: `npm run fetch` stores recent RSS items.
 ---
 
-### **Stage 2 — Content Extraction & Chunking** ✅ 
+### **Stage 2 — Content Processing - Content Extraction & Chunking** ✅ 
 1. Extract full text from RSS items (use content field or fetch article URL + extract text).
 2. Implement `chunker.ts` to split text (~1500 chars/chunk).
 3. Save chunks with metadata in DB or JSON.
@@ -84,14 +84,14 @@ SCHEDULE_CRON="0 7 * * *"
 
 ---
 
-### **Stage 3 — Embeddings & Vector Upsert**
+### **Stage 3 — Content Processing - Embeddings & Vector Upsert**
 1. Implement `llmClient.embed(texts[])` to generate embeddings.
 2. Upsert embeddings + metadata into vector DB (`vectorClient.upsert()`).
 3. Acceptance: Nearest neighbor queries return inserted chunks.
 
 ---
 
-### **Stage 4 — Retrieval, Clustering & Summarization**
+### **Stage 4 — RAG - Retrieval, Clustering & Summarization**
 1. Implement `retriever.ts`:
    - Query vector DB for relevant chunks (e.g., last 24h).
    - Select top-N chunks.
