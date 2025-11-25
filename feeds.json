@@ -29,6 +29,108 @@
       "url": "https://feeds.feedburner.com/ycombinator",
       "category": "news",
       "active": false
+    },
+    {
+      "name": "Developing.dev",
+      "url": "https://www.developing.dev/feed",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "David Walsh Blog",
+      "url": "https://davidwalsh.name/feed",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "LeadDev",
+      "url": "https://leaddev.com/feed",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "O'Reilly Radar",
+      "url": "http://feeds.feedburner.com/oreilly/radar/atom",
+      "category": "technology",
+      "active": true
+    },
+    {
+      "name": "Simon Willison",
+      "url": "https://simonwillison.net/atom/everything/",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "Kevin Powell (YouTube)",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCQvdU25Eqk3YS9-QnILhKKQ",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "ThoughtWorks Insights",
+      "url": "http://www.thoughtworks.com/rss/insights.xml",
+      "category": "technology",
+      "active": true
+    },
+    {
+      "name": "Dmitri Pavlutin",
+      "url": "https://dmitripavlutin.com/rss/",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "Engadget",
+      "url": "http://feeds2.feedburner.com/blogspot/Egta",
+      "category": "technology",
+      "active": true
+    },
+    {
+      "name": "CoffeeScript Reddit",
+      "url": "http://www.reddit.com/r/coffeescript/.rss",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "ByteByteGo (YouTube)",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCGGRRqAjPm6sL3-WGBDnKJA",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "Netflix Tech Blog",
+      "url": "http://techblog.netflix.com/feeds/posts/default",
+      "category": "technology",
+      "active": true
+    },
+    {
+      "name": "Spotify Labs",
+      "url": "http://labs.spotify.com/feed/",
+      "category": "technology",
+      "active": true
+    },
+    {
+      "name": "Tinder Engineering",
+      "url": "https://medium.com/feed/tinder-engineering",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "VoidZero",
+      "url": "https://voidzero.dev/feed.xml",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "Vue.js Developers",
+      "url": "http://vuejsdevelopers.com/feed.xml",
+      "category": "development",
+      "active": true
+    },
+    {
+      "name": "LogRocket Blog",
+      "url": "https://blog.logrocket.com/feed",
+      "category": "development",
+      "active": true
     }
   ]
 }
