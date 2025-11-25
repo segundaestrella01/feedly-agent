@@ -51,6 +51,7 @@ export interface RawChunk {
     categories?: string[];
     tags?: string[];
   };
+  timestamp: string;
 }
 
 // Processing statistics and monitoring
