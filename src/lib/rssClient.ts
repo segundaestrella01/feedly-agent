@@ -1,28 +1,7 @@
 import Parser from 'rss-parser';
 import fs from 'fs/promises';
 import path from 'path';
-
-export interface RSSItem {
-  id: string;
-  title: string;
-  link: string;
-  pubDate: string;
-  content: string;
-  contentSnippet: string;
-  creator?: string;
-  categories?: string[];
-  source: string;
-  feedUrl: string;
-  guid: string;
-}
-
-export interface RSSFeed {
-  title: string;
-  description: string;
-  link: string;
-  feedUrl: string;
-  items: RSSItem[];
-}
+import type { RSSItem, RSSFeed } from '../types/index.js';
 
 export class RSSClient {
   private parser: Parser;

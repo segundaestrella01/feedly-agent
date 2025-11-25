@@ -1,11 +1,12 @@
 import { chunkContent } from './chunker.js';
+import type { ChunkResult } from '../types/index.js';
 
 /**
  * Combined processor worker for stage implementation
  * Currently handles: chunking
  * TODO: Add embedding + upserting in future stages
  */
-export async function processContent(inputFilePath?: string, fetchFullArticles = true) {
+export async function processContent(inputFilePath?: string, fetchFullArticles = true): Promise<ChunkResult> {
   try {
     console.log('🔄 Starting content processing pipeline...');
     

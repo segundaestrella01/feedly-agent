@@ -1,8 +1,15 @@
 import 'dotenv/config';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { VectorClient, ChunkWithEmbedding, ChunkMetadata } from '../lib/vectorClient.js';
+import { VectorClient } from '../lib/vectorClient.js';
 import { DatabaseClient } from '../lib/db.js';
+import type { 
+  ChunkWithEmbedding, 
+  ChunkMetadata,
+  ChunkFile,
+  RawChunk,
+  ProcessingStats,
+} from '../types/index.js';
 
 // Constants
 const DATA_DIR = process.env.DATA_DIR || './data';
@@ -13,42 +20,6 @@ const BATCH_DELAY_DIVISOR = 2;
 const SEPARATOR_LENGTH = 60;
 const MILLISECONDS_IN_SECOND = 1000;
 const DECIMAL_PLACES = 2;
-
-// Types for chunk file structure
-interface ChunkFile {
-  totalItems: number;
-  totalChunks: number;
-  chunks: RawChunk[];
-}
-
-interface RawChunk {
-  id: string;
-  chunkIndex: number;
-  content: string;
-  wordCount: number;
-  charCount: number;
-  sourceItem: {
-    id: string;
-    title: string;
-    link: string;
-    pubDate: string;
-    source: string;
-    categories?: string[];
-    tags?: string[];
-  };
-}
-
-interface ProcessingStats {
-  totalFiles: number;
-  totalChunks: number;
-  processedChunks: number;
-  skippedChunks: number;
-  successfulUpserts: number;
-  errors: number;
-  tokensUsed: number;
-  startTime: Date;
-  endTime?: Date;
-}
 
 // Embedder worker: generates embeddings and upserts to vector DB
 export class EmbedderWorker {

@@ -1,40 +1,13 @@
 import { promises as fs } from 'fs';
 import { dirname } from 'path';
 import Database from 'better-sqlite3';
-
-// Types for embedding tracking
-export interface EmbeddingStatus {
-  id?: number;
-  chunk_file: string;
-  total_chunks: number;
-  processed_chunks: number;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  started_at?: string;
-  completed_at?: string;
-  error_message?: string;
-  model_used: string;
-}
-
-export interface ChunkEmbedding {
-  id: string;
-  chunk_id: string;
-  source_file: string;
-  embedding_created_at?: string;
-  vector_id: string;
-  model_used: string;
-}
-
-export interface RSSItem {
-  id: string;
-  title: string;
-  link: string;
-  pub_date: string;
-  source: string;
-  categories?: string;
-  content?: string;
-  processed: boolean;
-  created_at?: string;
-}
+import type {
+  EmbeddingStatus,
+  ChunkEmbedding,
+  RSSItemRecord,
+  EmbeddingStats,
+  DatabaseInfo,
+} from '../types/index.js';
 
 // Database client for metadata storage (SQLite)
 export class DatabaseClient {
@@ -122,18 +95,17 @@ export class DatabaseClient {
     `);
   }
 
-  // RSS Items Methods
   /**
    * Upsert RSS items
    */
-  async upsertRSSItems(items: RSSItem[]): Promise<void> {
+  async upsertRSSItems(items: RSSItemRecord[]): Promise<void> {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO rss_items 
       (id, title, link, pub_date, source, categories, content, processed)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const transaction = this.db.transaction((items: RSSItem[]) => {
+    const transaction = this.db.transaction((items: RSSItemRecord[]) => {
       for (const item of items) {
         stmt.run(
           item.id,
@@ -151,10 +123,7 @@ export class DatabaseClient {
     transaction(items);
   }
 
-  /**
-   * Get RSS items by status
-   */
-  getRSSItems(processed?: boolean, source?: string): RSSItem[] {
+  getRSSItems(processed?: boolean, source?: string): RSSItemRecord[] {
     let query = 'SELECT * FROM rss_items';
     const params: any[] = [];
 
@@ -174,7 +143,7 @@ export class DatabaseClient {
 
     query += ' ORDER BY pub_date DESC';
 
-    return this.db.prepare(query).all(...params) as RSSItem[];
+    return this.db.prepare(query).all(...params) as RSSItemRecord[];
   }
 
   /**
@@ -306,13 +275,7 @@ export class DatabaseClient {
   /**
    * Get embedding statistics
    */
-  getEmbeddingStats(): {
-    total_files: number;
-    completed_files: number;
-    pending_files: number;
-    failed_files: number;
-    total_chunks_embedded: number;
-    } {
+  getEmbeddingStats(): EmbeddingStats {
     const stats = this.db.prepare(`
       SELECT 
         COUNT(*) as total_files,
@@ -344,7 +307,7 @@ export class DatabaseClient {
   /**
    * Get database info
    */
-  getInfo(): { path: string; tables: string[] } {
+  getInfo(): DatabaseInfo {
     const tables = this.db.prepare(`
       SELECT name FROM sqlite_master 
       WHERE type='table' AND name NOT LIKE 'sqlite_%'

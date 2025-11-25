@@ -39,7 +39,7 @@ export async function fetchRSSItems() {
 }
 
 // Run fetcher if this file is executed directly
-if (process.argv[1].endsWith('fetcher.ts') || process.argv[1].endsWith('fetcher.js')) {
+if (process.argv[1] && (process.argv[1].endsWith('fetcher.ts') || process.argv[1].endsWith('fetcher.js'))) {
   fetchRSSItems()
     .then(() => {
       console.log('✅ Fetch completed successfully');

@@ -1,31 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { RSSItem } from '../lib/rssClient.js';
 import { JSDOM } from 'jsdom';
-
-interface ContentChunk {
-  id: string;
-  chunkIndex: number;
-  content: string;
-  wordCount: number;
-  charCount: number;
-  sourceItem: {
-    id: string;
-    title: string;
-    link: string;
-    pubDate: string;
-    source: string;
-    categories?: string[];
-  };
-  timestamp: string;
-}
-
-interface ChunkResult {
-  totalItems: number;
-  totalChunks: number;
-  chunks: ContentChunk[];
-  timestamp: string;
-}
+import type { 
+  RSSItem, 
+  ContentChunk, 
+  ChunkResult,
+} from '../types/index.js';
 
 const CHUNK_SIZE = 1500; // Target characters per chunk
 const CHUNK_OVERLAP = 150; // Overlap between chunks for context preservation

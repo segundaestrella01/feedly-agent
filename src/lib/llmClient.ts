@@ -1,6 +1,12 @@
 import OpenAI from 'openai';
+import { 
+  type EmbeddingResult, 
+  type BatchEmbeddingResult, 
+  EMBEDDING_DIMENSIONS, 
+  type EmbeddingModel, 
+} from '../types/index.js';
 
-// Constants
+// Implementation constants
 const CHARS_PER_TOKEN = 4; // Rough estimation: 1 token ≈ 4 characters
 const MAX_TOKEN_CHARS = 100; // Max chars for warning
 const HTTP_RATE_LIMIT = 429;
@@ -11,28 +17,10 @@ const MAX_RATE_LIMIT_DELAY_MS = 30000;
 const MAX_SERVER_ERROR_DELAY_MS = 10000;
 const DEFAULT_MAX_TOKENS = 8000;
 
-// Embedding dimensions by model
-const EMBEDDING_DIMENSIONS = {
-  'text-embedding-3-small': 1536,
-  'text-embedding-3-large': 3072,
-  'text-embedding-ada-002': 1536,
-} as const;
-
-// Types for embeddings
-export interface EmbeddingResult {
-  embedding: number[];
-  tokens: number;
-}
-
-export interface BatchEmbeddingResult {
-  embeddings: number[][];
-  totalTokens: number;
-}
-
 // LLM client for embeddings and chat completions
 export class LLMClient {
   private client: OpenAI;
-  private model: string;
+  private model: EmbeddingModel;
   private maxRetries: number;
 
   constructor() {
@@ -45,7 +33,7 @@ export class LLMClient {
       apiKey: apiKey,
     });
 
-    this.model = process.env.EMBEDDING_MODEL || 'text-embedding-3-small';
+    this.model = (process.env.EMBEDDING_MODEL as EmbeddingModel) || 'text-embedding-3-small';
     this.maxRetries = parseInt(process.env.EMBEDDING_MAX_RETRIES || '3', 10);
   }
 
@@ -187,7 +175,7 @@ export class LLMClient {
    * Get the current embedding model
    * @returns Model name
    */
-  getModel(): string {
+  getModel(): EmbeddingModel {
     return this.model;
   }
 

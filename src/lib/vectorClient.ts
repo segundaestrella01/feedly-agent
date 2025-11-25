@@ -1,52 +1,11 @@
 import { ChromaClient } from 'chromadb';
 import { LLMClient } from './llmClient.js';
-
-// Types for vector operations
-export interface ChunkMetadata {
-  // Source information
-  source: string;           // RSS feed source
-  source_url: string;       // Original article URL
-  title: string;           // Article title
-  published_date: string;  // ISO date string
-  
-  // Chunk information
-  chunk_index: number;     // Position in article
-  total_chunks: number;    // Total chunks for article
-  word_count: number;      // Words in chunk
-  char_count: number;      // Characters in chunk
-  
-  // Content classification
-  categories?: string[];   // Feed categories
-  tags?: string[];        // Extracted tags
-  content_type: string;   // 'article', 'summary', etc.
-  
-  // Processing metadata
-  processed_date: string; // When chunk was created
-  embedded_date: string;  // When embedding was generated
-  chunk_id: string;       // Unique chunk identifier
-}
-
-export interface ChunkWithEmbedding {
-  id: string;
-  content: string;
-  embedding?: number[];
-  metadata: ChunkMetadata;
-}
-
-export interface QueryResult {
-  id: string;
-  content: string;
-  metadata: ChunkMetadata;
-  distance: number;
-  score: number; // 1 - distance (higher is more similar)
-}
-
-export interface CollectionInfo {
-  name: string;
-  count: number;
-  metadata: Record<string, any>;
-  dimension?: number;
-}
+import type {
+  ChunkMetadata,
+  ChunkWithEmbedding,
+  QueryResult,
+  CollectionInfo,
+} from '../types/index.js';
 
 // Vector database client (Chroma)
 export class VectorClient {
