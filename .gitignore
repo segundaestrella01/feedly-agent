@@ -3,3 +3,5 @@ node_modules
 dist
 raw
 chunks
+data/chroma/*
+!data/chroma/.gitkeep
