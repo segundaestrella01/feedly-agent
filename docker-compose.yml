@@ -11,6 +11,7 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma
+    working_dir: /chroma/chroma
       - ANONYMIZED_TELEMETRY=FALSE
     restart: unless-stopped
     healthcheck:
