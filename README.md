@@ -154,21 +154,62 @@ const result = await chunkContent('./data/raw/specific-file.json');
 
 ### Environment Variables (`.env`)
 
+The project uses centralized configuration management through `src/lib/config.ts`. Copy `.env.example` to `.env` and configure:
+
+#### OpenAI Configuration (Stage 3 - Embeddings)
 ```bash
-# Fetch Configuration
-FETCH_HOURS_BACK=24
+OPENAI_API_KEY=sk-your-openai-api-key
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_BATCH_SIZE=50
+EMBEDDING_MAX_RETRIES=3
+```
+
+#### Chroma Vector Database Configuration
+```bash
+VECTOR_DB_TYPE=chroma
+CHROMA_DATA_PATH=./data/chroma
+CHROMA_COLLECTION_NAME=rss_chunks
+VECTOR_DIMENSION=1536
+```
+
+#### Processing Configuration
+```bash
+EMBEDDING_CONCURRENCY=1
+EMBEDDING_DELAY_MS=1000
+```
+
+#### General LLM Configuration
+```bash
+LLM_API_KEY=your-openai-api-key
+LLM_MODEL=gpt-4o-mini
+```
+
+#### Application Configuration
+```bash
+# Database
+METADB_URL=sqlite:./data/metadb.sqlite
+
+# Application
+APP_SECRET=your_app_secret
+SCHEDULE_CRON="0 7 * * *"
 DATA_DIR=./data
 
-# Content Processing
-CHUNK_SIZE=1500
-CHUNK_OVERLAP=150
+# Fetching
+FETCH_HOURS_BACK=24
 
-# API Keys (for future stages)
-LLM_API_KEY=your_openai_api_key
-EMBEDDING_MODEL=text-embedding-3-small
-LLM_MODEL=gpt-4o-mini
-VECTOR_DB_URL=http://localhost:6333
+# Email (Optional)
+SMTP_URL=smtp://user:pass@smtp.server:587
 ```
+
+### Configuration Testing
+
+Test your configuration setup:
+
+```bash
+npm run test:config
+```
+
+This will validate all environment variables, create required directories, and show a configuration summary.
 
 ### Feed Configuration (`feeds.json`)
 
@@ -187,14 +228,37 @@ VECTOR_DB_URL=http://localhost:6333
 
 ## 🔧 Available Commands
 
+### Core Operations
 ```bash
 npm run dev       # Start development server
 npm run fetch     # Fetch RSS items
 npm run chunk     # Extract and chunk content
 npm run process   # Complete processing pipeline
+npm run embed     # Generate embeddings and upsert to vector database
+npm run digest    # Generate daily digest
+```
+
+### Testing & Debugging
+```bash
+npm run test:config     # Test configuration setup
+npm run test:embedding  # Test OpenAI embedding functionality
+npm run test:chroma     # Test Chroma vector database
+npm run test:embedder   # Test embedder worker
+npm run test:queries    # Test vector queries
+```
+
+### Vector Database Management
+```bash
+npm run embed:status    # Check embedding processing status
+npm run vector:query    # Interactive vector database queries
+npm run vector:reset    # Reset vector database
+```
+
+### Development
+```bash
 npm run build     # Build TypeScript
 npm run lint      # Run ESLint
-npm run test      # Run tests (TODO)
+npm run test      # Run tests
 ```
 
 ## 📊 Current Status
