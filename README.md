@@ -244,3 +244,6 @@ The chunker has been tested with:
 - Implement vector similarity search
 
 For detailed implementation plan, see [PLAN.md](./PLAN.md).
+
+# Costs Dashboard
+https://platform.openai.com/usage
