@@ -22,6 +22,8 @@
     "test:chroma": "tsx src/scripts/testChroma.ts",
     "test:embedder": "tsx src/scripts/testEmbedder.ts",
     "test:queries": "tsx src/scripts/testVectorQueries.ts",
+    "test:config": "tsx src/scripts/testConfig.ts",
+    "stage36:summary": "tsx src/scripts/stage36Summary.ts",
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
     "vector:query": "tsx src/scripts/queryVector.ts",
     "vector:reset": "tsx src/scripts/resetVector.ts",
