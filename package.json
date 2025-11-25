@@ -14,6 +14,7 @@
     "digest": "tsx src/workers/digestGenerator.ts",
     "test": "jest",
     "test:embedding": "tsx src/scripts/testEmbedding.ts",
+    "test:chroma": "tsx src/scripts/testChroma.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit",
@@ -57,6 +58,7 @@
   "homepage": "https://github.com/segundaestrella01/feedly-agent#readme",
   "dependencies": {
     "@types/jsdom": "^27.0.0",
+    "chromadb": "^3.1.6",
     "dotenv": "^17.2.3",
     "jsdom": "^27.2.0",
     "openai": "^6.9.1",
