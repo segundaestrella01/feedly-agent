@@ -84,7 +84,7 @@ SCHEDULE_CRON="0 7 * * *"
 
 ---
 
-### **Stage 3 — Content Processing - Embeddings & Vector Upsert**
+### **Stage 3 — Content Processing - Embeddings & Vector Upsert** ✅ 
 1. Implement `llmClient.embed(texts[])` to generate embeddings.
 2. Upsert embeddings + metadata into vector DB (`vectorClient.upsert()`).
 3. Acceptance: Nearest neighbor queries return inserted chunks.
