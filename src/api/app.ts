@@ -4,4 +4,4 @@ export function createApp() {
   console.log('Creating API app...');
 }
 
-  createApp();
+createApp();
