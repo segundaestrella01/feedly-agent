@@ -1,0 +1,2 @@
+# This file ensures the chroma data directory exists for Docker volume mounting
+# ChromaDB data files will be stored here when using docker-compose
