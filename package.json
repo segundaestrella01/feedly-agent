@@ -28,6 +28,7 @@
     "vector:query": "tsx src/scripts/queryVector.ts",
     "vector:reset": "tsx src/scripts/resetVector.ts",
     "test:metadata": "tsx src/scripts/testMetadataSchema.ts",
+    "test:acceptance": "tsx src/scripts/testAcceptanceCriteria.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit",
