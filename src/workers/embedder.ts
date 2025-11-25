@@ -2,12 +2,17 @@ import 'dotenv/config';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { VectorClient, ChunkWithEmbedding, ChunkMetadata } from '../lib/vectorClient.js';
+import { DatabaseClient } from '../lib/db.js';
 
 // Constants
 const DATA_DIR = process.env.DATA_DIR || './data';
 const CHUNKS_DIR = path.join(DATA_DIR, 'chunks');
 const BATCH_SIZE = parseInt(process.env.EMBEDDING_BATCH_SIZE || '20', 10);
 const DELAY_MS = parseInt(process.env.EMBEDDING_DELAY_MS || '1000', 10);
+const BATCH_DELAY_DIVISOR = 2;
+const SEPARATOR_LENGTH = 60;
+const MILLISECONDS_IN_SECOND = 1000;
+const DECIMAL_PLACES = 2;
 
 // Types for chunk file structure
 interface ChunkFile {
@@ -48,10 +53,12 @@ interface ProcessingStats {
 // Embedder worker: generates embeddings and upserts to vector DB
 export class EmbedderWorker {
   private vectorClient: VectorClient;
+  private dbClient: DatabaseClient;
   private stats: ProcessingStats;
 
   constructor() {
     this.vectorClient = new VectorClient();
+    this.dbClient = new DatabaseClient();
     this.stats = {
       totalFiles: 0,
       totalChunks: 0,
@@ -70,6 +77,9 @@ export class EmbedderWorker {
   async embedAndUpsert(): Promise<void> {
     try {
       console.log('🚀 Starting embedder worker...\n');
+
+      // Initialize database
+      await this.dbClient.initialize();
 
       // Initialize vector database
       await this.vectorClient.initialize();
@@ -94,15 +104,28 @@ export class EmbedderWorker {
       // Process each chunk file
       for (let i = 0; i < chunkFiles.length; i++) {
         const file = chunkFiles[i];
-        if (!file) {continue;}
+        if (!file) {
+          continue;
+        }
         
-        console.log(`\n📂 Processing file ${i + 1}/${chunkFiles.length}: ${path.basename(file)}`);
+        const fileName = path.basename(file);
+        console.log(`\n📂 Processing file ${i + 1}/${chunkFiles.length}: ${fileName}`);
+        
+        // Check if file is already completed
+        const existingStatus = this.dbClient.getEmbeddingStatus(fileName);
+        if (existingStatus.length > 0 && existingStatus[0] && existingStatus[0].status === 'completed') {
+          console.log('   ⏭️ File already completed, skipping...');
+          continue;
+        }
         
         try {
           await this.processChunkFile(file);
         } catch (error) {
           console.error(`❌ Failed to process file ${file}:`, error);
           this.stats.errors++;
+          
+          // Mark as failed in database
+          await this.dbClient.markEmbeddingFailed(fileName, String(error));
         }
 
         // Add delay between files to respect rate limits
@@ -115,6 +138,9 @@ export class EmbedderWorker {
       // Final statistics
       this.stats.endTime = new Date();
       await this.printFinalStats();
+
+      // Close database connection
+      this.dbClient.close();
 
     } catch (error) {
       console.error('❌ Embedder worker failed:', error);
@@ -144,6 +170,8 @@ export class EmbedderWorker {
    * Process a single chunk file
    */
   private async processChunkFile(filePath: string): Promise<void> {
+    const fileName = path.basename(filePath);
+    
     try {
       // Load chunk file
       const content = await fs.readFile(filePath, 'utf-8');
@@ -152,8 +180,32 @@ export class EmbedderWorker {
       console.log(`📄 Loaded ${chunkFile.totalChunks} chunks from ${chunkFile.totalItems} items`);
       this.stats.totalChunks += chunkFile.totalChunks;
 
+      // Initialize status in database
+      await this.dbClient.upsertEmbeddingStatus({
+        chunk_file: fileName,
+        total_chunks: chunkFile.totalChunks,
+        processed_chunks: 0,
+        status: 'processing',
+        model_used: 'text-embedding-3-small',
+      });
+
+      // Check for already embedded chunks
+      const allChunkIds = chunkFile.chunks.map(c => c.id);
+      const alreadyEmbedded = this.dbClient.getEmbeddedChunks(allChunkIds);
+      const chunksToProcess = chunkFile.chunks.filter(c => !alreadyEmbedded.includes(c.id));
+      
+      if (chunksToProcess.length === 0) {
+        console.log('   ✅ All chunks already embedded, marking as completed');
+        await this.dbClient.updateEmbeddingProgress(fileName, chunkFile.totalChunks, 'completed');
+        return;
+      }
+      
+      if (alreadyEmbedded.length > 0) {
+        console.log(`   📊 Found ${alreadyEmbedded.length} already embedded, processing ${chunksToProcess.length} remaining`);
+      }
+
       // Convert raw chunks to vector format
-      const vectorChunks = this.convertChunksToVectorFormat(chunkFile.chunks);
+      const vectorChunks = this.convertChunksToVectorFormat(chunksToProcess);
 
       // Process chunks in batches
       const batches = this.createBatches(vectorChunks, BATCH_SIZE);
@@ -177,7 +229,7 @@ export class EmbedderWorker {
 
           // Add delay between batches
           if (batchIndex < batches.length - 1) {
-            await this.sleep(DELAY_MS / 2); // Shorter delay between batches
+            await this.sleep(DELAY_MS / BATCH_DELAY_DIVISOR);
           }
 
         } catch (error) {
@@ -187,8 +239,15 @@ export class EmbedderWorker {
         }
       }
 
+      // Mark file as completed after successful processing
+      console.log('   ✅ File processing completed, updating status to \'completed\'');
+      await this.dbClient.updateEmbeddingProgress(fileName, chunkFile.totalChunks, 'completed');
+
     } catch (error) {
       console.error(`❌ Failed to process chunk file ${filePath}:`, error);
+      
+      // Mark file as failed
+      await this.dbClient.updateEmbeddingProgress(fileName, 0, 'failed');
       throw error;
     }
   }
@@ -246,22 +305,22 @@ export class EmbedderWorker {
    * Sleep utility function
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => globalThis.setTimeout(resolve, ms));
   }
 
   /**
    * Print final processing statistics
    */
   private async printFinalStats(): Promise<void> {
-    console.log('\n' + '='.repeat(60));
+    console.log('\n' + '='.repeat(SEPARATOR_LENGTH));
     console.log('📊 EMBEDDER WORKER COMPLETE - FINAL STATISTICS');
-    console.log('='.repeat(60));
+    console.log('='.repeat(SEPARATOR_LENGTH));
 
     const duration = this.stats.endTime 
-      ? (this.stats.endTime.getTime() - this.stats.startTime.getTime()) / 1000
+      ? (this.stats.endTime.getTime() - this.stats.startTime.getTime()) / MILLISECONDS_IN_SECOND
       : 0;
 
-    console.log(`🕒 Duration: ${duration.toFixed(2)} seconds`);
+    console.log(`🕒 Duration: ${duration.toFixed(DECIMAL_PLACES)} seconds`);
     console.log(`📁 Files processed: ${this.stats.totalFiles}`);
     console.log(`📄 Total chunks: ${this.stats.totalChunks}`);
     console.log(`✅ Successfully processed: ${this.stats.processedChunks}`);
@@ -269,18 +328,22 @@ export class EmbedderWorker {
     console.log(`❌ Errors: ${this.stats.errors}`);
     
     if (this.stats.processedChunks > 0) {
-      console.log(`⚡ Average chunks/second: ${(this.stats.processedChunks / duration).toFixed(2)}`);
+      console.log(`⚡ Average chunks/second: ${(this.stats.processedChunks / duration).toFixed(DECIMAL_PLACES)}`);
     }
 
     // Get final collection info
     try {
       const finalInfo = await this.vectorClient.getCollectionInfo();
       console.log(`🗃️ Final vector database: ${finalInfo.count} vectors (${finalInfo.dimension} dimensions)`);
+      
+      // Get database stats
+      const dbStats = this.dbClient.getEmbeddingStats();
+      console.log(`💾 Database: ${dbStats.total_chunks_embedded} chunks tracked, ${dbStats.completed_files}/${dbStats.total_files} files completed`);
     } catch (error) {
       console.log('⚠️ Could not get final collection info:', error);
     }
 
-    console.log('='.repeat(60));
+    console.log('='.repeat(SEPARATOR_LENGTH));
     
     if (this.stats.errors > 0) {
       console.log(`⚠️ Completed with ${this.stats.errors} errors. Check logs above for details.`);
