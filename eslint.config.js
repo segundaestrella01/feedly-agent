@@ -79,7 +79,9 @@ export default [
       sourceType: 'module',
     },
     rules: {
-      'no-undef': 'error',
+      'no-undef': ['error', {
+        setTimeout: false,
+      }],
     },
   },
   {
