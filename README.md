@@ -2,6 +2,19 @@
 
 A personal AI assistant that fetches RSS feeds, embeds and clusters content, and generates a daily digest tailored to your interests using a Retrieval-Augmented Generation (RAG) workflow.
 
+## 🎯 Current Capabilities
+
+- ✅ **Fetch** RSS feeds from multiple sources
+- ✅ **Extract** full article content with intelligent parsing
+- ✅ **Chunk** content into semantic segments (~1500 chars)
+- ✅ **Embed** chunks using OpenAI embeddings
+- ✅ **Store** in Chroma vector database with rich metadata
+- ✅ **Retrieve** content via semantic search, time filters, and hybrid scoring
+- ✅ **Cluster** content using k-means algorithm with quality scoring
+- ✅ **Summarize** clusters with LLM-powered topic labels and key takeaways
+- ✅ **Generate** daily digest with rich formatting
+- ✅ **Post** to Notion as beautifully formatted pages
+
 ## 🔄 Workflow Overview
 
 ```mermaid
@@ -39,19 +52,6 @@ graph TB
 - **Stage 1-2**: Data Collection (Fetch → Extract → Chunk)
 - **Stage 3**: Vector Embeddings (Embed → Store)
 - **Stage 4**: Digest Generation (Retrieve → Cluster → Summarize → Post)
-
-## 🎯 Current Capabilities
-
-✅ **Fetch** RSS feeds from multiple sources
-✅ **Extract** full article content with intelligent parsing
-✅ **Chunk** content into semantic segments (~1500 chars)
-✅ **Embed** chunks using OpenAI embeddings
-✅ **Store** in Chroma vector database with rich metadata
-✅ **Retrieve** content via semantic search, time filters, and hybrid scoring
-✅ **Cluster** content using k-means algorithm with quality scoring
-✅ **Summarize** clusters with LLM-powered topic labels and key takeaways
-✅ **Generate** daily digest with rich formatting
-✅ **Post** to Notion as beautifully formatted pages
 
 ## 🚀 Quick Start
 
