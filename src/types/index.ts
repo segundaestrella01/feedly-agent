@@ -14,6 +14,9 @@ export * from './content.js';
 // Embedding and LLM Types
 export * from './embedding.js';
 
+// Chat Completion Types
+export * from './chat.js';
+
 // Vector Database Types
 export * from './vector.js';
 
