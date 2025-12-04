@@ -1,6 +1,6 @@
 /**
  * Test Chat Completion
- * 
+ *
  * This script tests the chat completion functionality of the LLMClient.
  * It verifies:
  * - Basic chat completion
@@ -9,6 +9,7 @@
  * - Error handling
  */
 
+import 'dotenv/config';
 import { LLMClient } from '../lib/llmClient.js';
 import type { ChatMessage } from '../types/index.js';
 
