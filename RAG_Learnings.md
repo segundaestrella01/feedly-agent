@@ -26,3 +26,22 @@ How it's done:
 4. Pick representatives per cluster
 5. Summarize each cluster with the LLM
 6. Assemble digest
+
+## Silhouette Score
+The silhouette score is the most common metric used to evaluate the quality of clustering.
+It measures two things at once:
+- Cohesion (how close each point is to *its own* cluster)
+- Separation (how far each point is from the *next closest* cluster)
+
+The result is a number from –1 (bad clustering) to 1 (perfect clustering).
+
+A good cluster has close neighbors and is far from other clusters.
+
+## Cluster Size Distribution
+After clustering, you want to ensure that cluster sizes are balanced.
+Unbalanced clusters lead to:
+
+❌ Digest dominated by 1 topic
+❌ Misleading summaries ("Everything today is about AI!")
+❌ Poor user experience
+❌ Lower-quality preference learning

@@ -188,6 +188,24 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
 
 # 🔮 Follow-up Improvements
 
+### Automatic k Optimization for Clustering
+- **Problem**: Currently, the number of clusters (k) is fixed and may not be optimal for the data
+- **Current State**: Silhouette score is calculated to measure cluster quality but no action is taken when it indicates poor clustering
+- **Proposed Solution**: Implement automatic k optimization that:
+  - Tries multiple k values (e.g., k-2 to k+2, or range 3-8)
+  - Calculates Silhouette score for each k
+  - Selects the k value that produces the highest Silhouette score
+  - Falls back to original k if optimization fails or takes too long
+- **Benefits**:
+  - Better cluster quality automatically
+  - Adapts to varying amounts of content
+  - Reduces need for manual k tuning
+- **Implementation Notes**:
+  - Add `optimizeK` option to `ClusteringOptions`
+  - Cache results to avoid re-clustering
+  - Set reasonable bounds (min k=2, max k=10 or sqrt(n))
+  - Consider computational cost vs. quality tradeoff
+
 ### LLM-Assisted Topic Labeling
 - Add chat completion capability to `LLMClient` for generating human-readable cluster labels
 - Send representative chunks from each cluster to LLM with prompt to generate descriptive topic names (e.g., "AI Industry Updates", "Cybersecurity Threats")
