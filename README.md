@@ -515,6 +515,11 @@ NOTION_COLLAPSE_ARTICLES=true
 
 #### Application Configuration
 ```bash
+# Time Window Configuration
+# Controls both RSS fetching and digest generation
+# Options: 1h, 6h, 12h, 24h, 3d, 7d
+TIME_WINDOW=24h
+
 # Database
 METADB_URL=sqlite:./data/metadb.sqlite
 
@@ -522,9 +527,6 @@ METADB_URL=sqlite:./data/metadb.sqlite
 APP_SECRET=your_app_secret
 SCHEDULE_CRON="0 7 * * *"
 DATA_DIR=./data
-
-# Fetching
-FETCH_HOURS_BACK=24
 
 # Email (Optional)
 SMTP_URL=smtp://user:pass@smtp.server:587

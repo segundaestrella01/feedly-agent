@@ -444,7 +444,7 @@ interface CLIOptions {
 
 function parseArgs(args: string[]): CLIOptions {
   const options: CLIOptions = {
-    window: process.env.DIGEST_TIME_WINDOW as TimeWindow || DEFAULT_TIME_WINDOW,
+    window: (process.env.TIME_WINDOW as TimeWindow) || DEFAULT_TIME_WINDOW,
     clusters: parseInt(process.env.DIGEST_CLUSTER_COUNT || String(DEFAULT_CLUSTER_COUNT), 10),
     dryRun: process.env.NOTION_DRY_RUN !== 'false',
     verbose: false,
@@ -581,7 +581,7 @@ Examples:
   npm run digest -- --verbose --dry-run    # Verbose preview
 
 Environment Variables:
-  DIGEST_TIME_WINDOW         Default time window
+  TIME_WINDOW                Default time window (1h, 6h, 12h, 24h, 3d, 7d)
   DIGEST_CLUSTER_COUNT       Default cluster count
   NOTION_API_KEY             Notion API key (required for posting)
   NOTION_DATABASE_ID         Notion database ID (required for posting)

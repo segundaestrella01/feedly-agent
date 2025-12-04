@@ -1,8 +1,5 @@
 import { createRSSClientFromConfig } from '../lib/rssClient.js';
-import dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
+import { getConfig, timeWindowToHours } from '../lib/config.js';
 
 /**
  * Fetcher worker: retrieves RSS items and saves to data/raw
@@ -13,28 +10,31 @@ dotenv.config();
 export async function fetchRSSItems() {
   try {
     console.log('Starting RSS fetch process...');
-    
+
     const client = await createRSSClientFromConfig();
-    
-    // Get recent items (last 24 hours by default)
-    const hoursBack = parseInt(process.env.FETCH_HOURS_BACK || '24');
+    const config = getConfig();
+
+    // Get recent items using unified time window configuration
+    const hoursBack = timeWindowToHours(config.timeWindow);
+    console.log(`📅 Fetching items from the last ${config.timeWindow} (${hoursBack} hours)`);
+
     const items = await client.getRecentItems(hoursBack);
-    
+
     if (items.length === 0) {
       console.log('No new items found in the specified time range');
       return;
     }
-    
+
     // Save raw items to JSON file
     const savedPath = await client.saveRawItems(items);
-    
+
     console.log(`✅ Successfully fetched and saved ${items.length} RSS items`);
     console.log(`📁 Saved to: ${savedPath}`);
-    
+
     // TODO: Save metadata to SQLite database (will implement in next stage)
-    
+
     return items;
-    
+
   } catch (error) {
     console.error('❌ Error during RSS fetch:', error);
     throw error;

@@ -1,8 +1,9 @@
 import 'dotenv/config';
+import type { TimeWindow } from '../types/retrieval.js';
 
 /**
  * Configuration Management Module
- * 
+ *
  * Centralizes all environment variable handling with validation,
  * type safety, and default values according to the Stage 3.6 plan.
  */
@@ -14,8 +15,8 @@ const OPENAI_SMALL_EMBEDDING_DIMENSION = 1536;
 const OPENAI_LARGE_EMBEDDING_DIMENSION = 3072;
 const MAX_DELAY_MS = 10000;
 const MAX_CONCURRENCY = 10;
-const MAX_HOURS_BACK = 168; // 1 week
 const SEPARATOR_LENGTH = 50;
+const DEFAULT_TIME_WINDOW: TimeWindow = '24h';
 
 export interface AppConfig {
   // OpenAI Configuration (Stage 3.1 - LLM Client)
@@ -58,15 +59,45 @@ export interface AppConfig {
     dataDir: string;
   };
 
-  // Fetching Configuration
-  fetching: {
-    hoursBack: number;
-  };
+  // Time Window Configuration
+  timeWindow: TimeWindow;
 
   // Email Configuration (optional)
   email?: {
     smtpUrl: string;
   };
+}
+
+/**
+ * Convert TimeWindow to hours for backward compatibility
+ */
+export function timeWindowToHours(timeWindow: TimeWindow): number {
+  const timeMap: Record<TimeWindow, number> = {
+    '1h': 1,
+    '6h': 6,
+    '12h': 12,
+    '24h': 24,
+    '3d': 72,
+    '7d': 168,
+  };
+  return timeMap[timeWindow];
+}
+
+/**
+ * Get time window from environment variable
+ */
+function getTimeWindowFromEnv(): TimeWindow {
+  const validTimeWindows: TimeWindow[] = ['1h', '6h', '12h', '24h', '3d', '7d'];
+
+  if (process.env.TIME_WINDOW) {
+    const timeWindow = process.env.TIME_WINDOW as TimeWindow;
+    if (validTimeWindows.includes(timeWindow)) {
+      return timeWindow;
+    }
+    console.warn(`⚠️  Invalid TIME_WINDOW value: ${process.env.TIME_WINDOW}. Using default: ${DEFAULT_TIME_WINDOW}`);
+  }
+
+  return DEFAULT_TIME_WINDOW;
 }
 
 /**
@@ -83,6 +114,9 @@ function loadConfig(): AppConfig {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+
+  // Determine time window with backward compatibility
+  const timeWindow = getTimeWindowFromEnv();
 
   return {
     // OpenAI Configuration (Stage 3.1 - LLM Client)
@@ -125,10 +159,8 @@ function loadConfig(): AppConfig {
       dataDir: process.env.DATA_DIR || './data',
     },
 
-    // Fetching Configuration
-    fetching: {
-      hoursBack: parseInt(process.env.FETCH_HOURS_BACK || '24', 10),
-    },
+    // Time Window Configuration
+    timeWindow,
 
     // Email Configuration (optional)
     ...(process.env.SMTP_URL && {
@@ -168,9 +200,10 @@ function validateConfig(config: AppConfig): void {
     throw new Error(`EMBEDDING_CONCURRENCY must be between 1 and ${MAX_CONCURRENCY}`);
   }
 
-  // Validate hours back
-  if (config.fetching.hoursBack < 1 || config.fetching.hoursBack > MAX_HOURS_BACK) {
-    throw new Error(`FETCH_HOURS_BACK must be between 1 and ${MAX_HOURS_BACK} (1 week)`);
+  // Validate time window
+  const validTimeWindows: TimeWindow[] = ['1h', '6h', '12h', '24h', '3d', '7d'];
+  if (!validTimeWindows.includes(config.timeWindow)) {
+    throw new Error(`TIME_WINDOW must be one of: ${validTimeWindows.join(', ')}`);
   }
 }
 
@@ -192,7 +225,7 @@ export function getConfig(): AppConfig {
  */
 export function printConfigSummary(): void {
   const config = getConfig();
-  
+
   console.log('📋 Configuration Summary:');
   console.log('='.repeat(SEPARATOR_LENGTH));
   console.log(`🤖 OpenAI Model: ${config.openai.embeddingModel}`);
@@ -204,7 +237,7 @@ export function printConfigSummary(): void {
   console.log(`⏱️ Delay: ${config.processing.embeddingDelayMs}ms`);
   console.log(`📁 Data Directory: ${config.app.dataDir}`);
   console.log(`📊 Database: ${config.database.metadbUrl}`);
-  console.log(`🕐 Fetch Hours Back: ${config.fetching.hoursBack}`);
+  console.log(`🕐 Time Window: ${config.timeWindow} (${timeWindowToHours(config.timeWindow)} hours)`);
   console.log('='.repeat(SEPARATOR_LENGTH));
 }
 
