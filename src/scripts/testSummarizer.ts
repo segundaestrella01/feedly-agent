@@ -166,6 +166,43 @@ async function testClusterDistribution(): Promise<boolean> {
 }
 
 /**
+ * Test Silhouette score quality validation
+ */
+async function testSilhouetteScore(): Promise<boolean> {
+  console.log('\n🧪 Testing Silhouette Score Quality Validation...');
+
+  const result = await clusterAllContent(100, { k: 5 });
+
+  if (result.clusters.length === 0) {
+    console.log('⚠️ No clusters for Silhouette score test');
+    return false;
+  }
+
+  if (result.silhouetteScore === undefined) {
+    console.log('❌ Silhouette score not calculated');
+    return false;
+  }
+
+  console.log(`📊 Silhouette score: ${result.silhouetteScore.toFixed(3)}`);
+
+  // Interpret quality
+  let quality = 'poor';
+  if (result.silhouetteScore >= 0.7) {quality = 'strong';}
+  else if (result.silhouetteScore >= 0.5) {quality = 'reasonable';}
+  else if (result.silhouetteScore >= 0.25) {quality = 'weak';}
+
+  console.log(`   Quality: ${quality}`);
+  console.log(`   Range check: ${result.silhouetteScore >= -1 && result.silhouetteScore <= 1 ? 'PASSED' : 'FAILED'}`);
+
+  // Silhouette score should be between -1 and 1
+  const isValid = result.silhouetteScore >= -1 && result.silhouetteScore <= 1;
+
+  console.log(`✅ Silhouette score validation: ${isValid ? 'PASSED' : 'FAILED'}`);
+
+  return isValid;
+}
+
+/**
  * Test main summarizeContent function
  */
 async function testSummarizeContent(): Promise<boolean> {
@@ -236,6 +273,7 @@ async function validateAcceptanceCriteria(): Promise<boolean> {
     'Support configurable cluster count': false,
     'Select representative chunk per cluster': false,
     'Return structured ClusteringResult': false,
+    'Calculate Silhouette score for quality': false,
     'Handle edge cases gracefully': false,
   };
 
@@ -282,7 +320,21 @@ async function validateAcceptanceCriteria(): Promise<boolean> {
     console.log(`   ✗ Structured result failed: ${error}`);
   }
 
-  // Test 5: Edge cases
+  // Test 5: Silhouette score calculation
+  try {
+    const result = await clusterAllContent(50, { k: 4 });
+    const hasSilhouette =
+      result.clusterCount > 1 &&
+      result.silhouetteScore !== undefined &&
+      result.silhouetteScore >= -1 &&
+      result.silhouetteScore <= 1;
+    criteria['Calculate Silhouette score for quality'] = hasSilhouette;
+    console.log(`   ✓ Silhouette score: ${hasSilhouette ? `${result.silhouetteScore?.toFixed(3)}` : 'Not calculated'}`);
+  } catch (error) {
+    console.log(`   ✗ Silhouette score failed: ${error}`);
+  }
+
+  // Test 6: Edge cases
   try {
     const emptyResult = clusterChunks([], { k: 5 });
     criteria['Handle edge cases gracefully'] = emptyResult.totalChunks === 0;
@@ -315,6 +367,7 @@ async function runAllTests(): Promise<void> {
     'Cluster Recent Content': false,
     'Representative Selection': false,
     'Cluster Distribution': false,
+    'Silhouette Score': false,
     'Main Summarize Function': false,
     'Edge Cases': false,
     'Acceptance Criteria': false,
@@ -326,6 +379,7 @@ async function runAllTests(): Promise<void> {
     testResults['Cluster Recent Content'] = await testClusterRecentContent();
     testResults['Representative Selection'] = await testRepresentativeSelection();
     testResults['Cluster Distribution'] = await testClusterDistribution();
+    testResults['Silhouette Score'] = await testSilhouetteScore();
     testResults['Main Summarize Function'] = await testSummarizeContent();
     testResults['Edge Cases'] = await testEdgeCases();
     testResults['Acceptance Criteria'] = await validateAcceptanceCriteria();
