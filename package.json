@@ -28,6 +28,7 @@
     "test:chat": "tsx src/scripts/testChatCompletion.ts",
     "test:digest-workflow": "tsx src/scripts/testDigestWorkflow.ts",
     "test:digest-types": "tsx src/scripts/testDigestTypes.ts",
+    "test:digest-summarization": "tsx src/scripts/testDigestSummarization.ts",
     "test:config": "tsx src/scripts/testConfig.ts",
     "stage36:summary": "tsx src/scripts/stage36Summary.ts",
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
