@@ -29,6 +29,8 @@
     "test:digest-workflow": "tsx src/scripts/testDigestWorkflow.ts",
     "test:digest-types": "tsx src/scripts/testDigestTypes.ts",
     "test:digest-summarization": "tsx src/scripts/testDigestSummarization.ts",
+    "test:digest-edge-cases": "tsx src/scripts/testDigestEdgeCases.ts",
+    "test:digest-all": "npm run test:digest-types && npm run test:digest-summarization && npm run test:digest-edge-cases",
     "test:config": "tsx src/scripts/testConfig.ts",
     "stage36:summary": "tsx src/scripts/stage36Summary.ts",
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
