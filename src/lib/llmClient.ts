@@ -1,9 +1,12 @@
 import OpenAI from 'openai';
-import { 
-  type EmbeddingResult, 
-  type BatchEmbeddingResult, 
-  EMBEDDING_DIMENSIONS, 
-  type EmbeddingModel, 
+import {
+  type EmbeddingResult,
+  type BatchEmbeddingResult,
+  EMBEDDING_DIMENSIONS,
+  type EmbeddingModel,
+  type ChatMessage,
+  type ChatCompletionOptions,
+  type ChatCompletionResult,
 } from '../types/index.js';
 
 // Implementation constants
@@ -17,11 +20,19 @@ const MAX_RATE_LIMIT_DELAY_MS = 30000;
 const MAX_SERVER_ERROR_DELAY_MS = 10000;
 const DEFAULT_MAX_TOKENS = 8000;
 
+// Chat completion defaults
+const DEFAULT_CHAT_MODEL = 'gpt-4o-mini';
+const DEFAULT_TEMPERATURE = 0.7;
+const DEFAULT_CHAT_MAX_TOKENS = 1000;
+
 // LLM client for embeddings and chat completions
 export class LLMClient {
   private client: OpenAI;
   private model: EmbeddingModel;
   private maxRetries: number;
+  private chatModel: string;
+  private temperature: number;
+  private chatMaxTokens: number;
 
   constructor() {
     const apiKey = process.env.OPENAI_API_KEY;
@@ -35,6 +46,11 @@ export class LLMClient {
 
     this.model = (process.env.EMBEDDING_MODEL as EmbeddingModel) || 'text-embedding-3-small';
     this.maxRetries = parseInt(process.env.EMBEDDING_MAX_RETRIES || '3', 10);
+
+    // Chat completion configuration
+    this.chatModel = process.env.LLM_MODEL || DEFAULT_CHAT_MODEL;
+    this.temperature = parseFloat(process.env.LLM_TEMPERATURE || String(DEFAULT_TEMPERATURE));
+    this.chatMaxTokens = parseInt(process.env.LLM_MAX_TOKENS || String(DEFAULT_CHAT_MAX_TOKENS), 10);
   }
 
   /**
@@ -208,7 +224,6 @@ export class LLMClient {
    */
   splitTextIfNeeded(text: string, maxTokens = DEFAULT_MAX_TOKENS): string[] {
     const estimatedTokens = this.estimateTokens(text);
-    
     if (estimatedTokens <= maxTokens) {
       return [text];
     }
@@ -216,10 +231,8 @@ export class LLMClient {
     const chunks: string[] = [];
     const words = text.split(' ');
     let currentChunk = '';
-    
     for (const word of words) {
       const testChunk = currentChunk ? `${currentChunk} ${word}` : word;
-      
       if (this.estimateTokens(testChunk) <= maxTokens) {
         currentChunk = testChunk;
       } else {
@@ -232,11 +245,81 @@ export class LLMClient {
         }
       }
     }
-    
+
     if (currentChunk) {
       chunks.push(currentChunk.trim());
     }
 
     return chunks.filter(chunk => chunk.length > 0);
+  }
+
+  /**
+   * Generate a chat completion
+   * @param messages Array of chat messages
+   * @param options Optional parameters for chat completion
+   * @returns Promise with chat completion result
+   */
+  async chatCompletion(
+    messages: ChatMessage[],
+    options?: ChatCompletionOptions,
+  ): Promise<ChatCompletionResult> {
+    if (messages.length === 0) {
+      throw new Error('At least one message is required for chat completion');
+    }
+
+    const model = options?.model || this.chatModel;
+    const temperature = options?.temperature ?? this.temperature;
+    const maxTokens = options?.maxTokens || this.chatMaxTokens;
+    const topP = options?.topP;
+
+    try {
+      const result = await this.retryWithBackoff(async () => {
+        const params: {
+          model: string;
+          messages: { role: 'system' | 'user' | 'assistant'; content: string }[];
+          temperature: number;
+          max_tokens: number;
+          top_p?: number;
+        } = {
+          model,
+          messages: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+          temperature,
+          max_tokens: maxTokens,
+        };
+
+        if (topP !== undefined) {
+          params.top_p = topP;
+        }
+
+        return await this.client.chat.completions.create(params);
+      }, this.maxRetries);
+
+      const choice = result.choices[0];
+      if (!choice || !choice.message) {
+        throw new Error('No completion returned from API');
+      }
+
+      const content = choice.message.content || '';
+      const tokens = {
+        prompt: result.usage?.prompt_tokens || 0,
+        completion: result.usage?.completion_tokens || 0,
+        total: result.usage?.total_tokens || 0,
+      };
+
+      console.log(`Chat completion: ${tokens.total} tokens (${tokens.prompt} prompt + ${tokens.completion} completion)`);
+
+      return {
+        content,
+        tokens,
+        model: result.model,
+        finishReason: choice.finish_reason || 'unknown',
+      };
+    } catch (error) {
+      console.error('Error generating chat completion:', error);
+      throw error;
+    }
   }
 }
