@@ -25,6 +25,7 @@
     "test:retriever": "tsx src/scripts/testRetriever.ts",
     "test:retriever:focused": "tsx src/scripts/testRetrieverFocused.ts",
     "test:summarizer": "tsx src/scripts/testSummarizer.ts",
+    "test:chat": "tsx src/scripts/testChatCompletion.ts",
     "test:config": "tsx src/scripts/testConfig.ts",
     "stage36:summary": "tsx src/scripts/stage36Summary.ts",
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
