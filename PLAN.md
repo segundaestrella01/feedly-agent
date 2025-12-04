@@ -99,7 +99,7 @@ SCHEDULE_CRON="0 7 * * *"
    - Cluster chunks using k-means on embeddings.
    - Support configurable cluster count (3-6 clusters).
    - Calculate Silhouette score for cluster quality.
-3. Implement `digestGenerator.ts`: 🚧 IN PROGRESS
+3. Implement `digest.ts`: 🚧 IN PROGRESS
    - Call LLM to summarize clusters.
    - Compose daily digest and post to Notion.
    - See `STAGE4_DIGEST_PLAN.md` for detailed implementation plan.

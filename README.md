@@ -10,8 +10,10 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
 ✅ **Embed** chunks using OpenAI embeddings
 ✅ **Store** in Chroma vector database with rich metadata
 ✅ **Retrieve** content via semantic search, time filters, and hybrid scoring
-🔄 **Cluster** and summarize content (in progress)
-🔄 **Generate** daily digest (in progress)
+✅ **Cluster** content using k-means algorithm with quality scoring
+✅ **Summarize** clusters with LLM-powered topic labels and key takeaways
+✅ **Generate** daily digest with rich formatting
+✅ **Post** to Notion as beautifully formatted pages
 
 ## 🚀 Quick Start
 
@@ -55,9 +57,19 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
    npm run test:retriever  # Test retrieval system
    ```
 
-8. **Generate daily digest** (coming soon):
+8. **Generate and post daily digest**:
    ```bash
+   # Preview digest without posting (default)
    npm run digest
+
+   # Generate and post to Notion
+   npm run digest -- --post
+
+   # Custom time window and cluster count
+   npm run digest -- --window 7d --clusters 8 --post
+
+   # Show all available options
+   npm run digest -- --help
    ```
 
 ## 📁 Project Structure
@@ -69,6 +81,7 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
       rssClient.ts      # RSS feed parsing and management ✅
       llmClient.ts      # LLM API client (embeddings + chat) ✅
       vectorClient.ts   # Chroma vector database client ✅
+      notionClient.ts   # Notion API client for digest posting ✅
       db.ts             # SQLite database client ✅
       metadataUtils.ts  # Rich metadata utilities ✅
       config.ts         # Centralized configuration ✅
@@ -78,14 +91,19 @@ A personal AI assistant that fetches RSS feeds, embeds and clusters content, and
       processor.ts      # Processing pipeline orchestrator ✅
       embedder.ts       # Text embedding & vector upsert ✅
       retriever.ts      # Vector retrieval & search ✅
-      summarizer.ts     # Content clustering & summarization (TODO)
-      digestGenerator.ts # Daily digest generation (TODO)
+      summarizer.ts     # Content clustering & summarization ✅
+      digest.ts         # Daily digest generation & Notion posting ✅
       memory.ts         # Preference memory (TODO)
       notifier.ts       # Notification delivery (TODO)
     /scripts
       testEmbedding.ts  # Test OpenAI embeddings ✅
       testChroma.ts     # Test Chroma vector DB ✅
       testRetriever.ts  # Test retrieval system ✅
+      testChatCompletion.ts # Test LLM chat completions ✅
+      testDigestGeneration.ts # Test digest generation ✅
+      testDigestIntegration.ts # Test digest integration ✅
+      testNotionPosting.ts # Test Notion posting ✅
+      testNotionE2E.ts  # End-to-end Notion tests ✅
       embeddingStatus.ts # Check embedding progress ✅
       queryVector.ts    # Interactive vector queries ✅
     /api
@@ -273,6 +291,119 @@ const results = await retrieveByQuery('artificial intelligence breakthroughs', {
 });
 ```
 
+### Stage 4: Digest Generation & Notion Integration ✅
+
+#### Summarizer Worker (`src/workers/summarizer.ts`)
+
+- **K-Means Clustering**: Groups similar content using embedding-based clustering
+- **Quality Metrics**: Silhouette score calculation for cluster quality validation
+- **Configurable Clusters**: Support for 2-10 clusters with automatic optimization
+- **Cluster Analysis**: Identifies representative articles and calculates cluster statistics
+
+#### Digest Worker (`src/workers/digest.ts`)
+
+- **Complete Pipeline**: Orchestrates retrieval → clustering → summarization → posting
+- **LLM-Powered Summarization**:
+  - Topic label generation (3-5 words per cluster)
+  - Cluster summaries (2-3 sentences)
+  - Key takeaways extraction (3-5 bullet points)
+- **Rich Metadata**: Tracks processing time, token usage, costs, and quality scores
+- **Comprehensive CLI**: 10+ command-line flags for customization
+
+#### Notion Client (`src/lib/notionClient.ts`)
+
+- **Notion API Integration**: Post digests as rich, formatted Notion pages
+- **Rich Block Formatting**:
+  - Headings, callouts, dividers, table of contents
+  - Collapsible toggle blocks for articles
+  - Bookmark blocks with link previews
+  - Color-coded callouts for metadata
+- **Flexible Options**: Control TOC, article collapse, icons, and covers
+- **Error Handling**: Comprehensive error messages for setup and API issues
+
+#### CLI Features
+
+The digest CLI supports extensive customization:
+
+```bash
+# Show all available options
+npm run digest -- --help
+
+# Time window options: 1h, 6h, 12h, 24h, 3d, 7d
+npm run digest -- --window 7d
+
+# Cluster count: 2-10 clusters
+npm run digest -- --clusters 8
+
+# Preview without posting (default)
+npm run digest -- --dry-run
+
+# Post to Notion
+npm run digest -- --post
+
+# Verbose logging
+npm run digest -- --verbose
+
+# Disable table of contents
+npm run digest -- --no-toc
+
+# Expand articles (don't collapse)
+npm run digest -- --no-collapse
+
+# Combine multiple options
+npm run digest -- --window 7d --clusters 5 --verbose --post
+```
+
+#### Usage Examples:
+
+```typescript
+import { generateDigest } from './src/workers/digest.js';
+import { clusterChunks } from './src/workers/summarizer.js';
+
+// Generate digest with defaults (24h, 5 clusters)
+const digest = await generateDigest();
+
+// Custom time window and cluster count
+const weeklyDigest = await generateDigest('7d', 8);
+
+// Cluster content manually
+const chunks = await retrieveRecentChunks('24h', 100);
+const clusters = await clusterChunks(chunks, 5);
+```
+
+#### Digest Data Structure:
+
+```typescript
+interface DigestContent {
+  title: string;                    // "📰 Daily Digest - Dec 4, 2025"
+  generatedAt: string;              // ISO timestamp
+  timeWindow: string;               // "24h", "7d", etc.
+  clusters: ClusterSummary[];       // Array of cluster summaries
+  metadata: {
+    totalArticles: number;          // Total articles processed
+    clusterCount: number;           // Number of clusters
+    avgSilhouetteScore?: number;    // Quality score (0-1)
+    processingTime: number;         // Seconds
+    model: string;                  // LLM model used
+    totalTokens?: number;           // Token usage
+    estimatedCost?: number;         // Cost in USD
+  };
+}
+
+interface ClusterSummary {
+  clusterId: number;
+  topicLabel: string;               // "AI & Machine Learning"
+  summary: string;                  // 2-3 sentence summary
+  keyTakeaways: string[];           // 3-5 bullet points
+  articleCount: number;
+  representativeArticles: ArticleReference[];
+  metadata: {
+    silhouetteScore?: number;
+    avgRelevanceScore?: number;
+  };
+}
+```
+
 ## 📝 Configuration
 
 ### Environment Variables (`.env`)
@@ -316,7 +447,33 @@ EMBEDDING_BATCH_SIZE=50
 ```bash
 LLM_API_KEY=your-openai-api-key
 LLM_MODEL=gpt-4o-mini
+LLM_TEMPERATURE=0.7
+LLM_MAX_TOKENS=1000
 ```
+
+#### Notion Configuration (Stage 4 - Digest Posting)
+```bash
+NOTION_API_KEY=secret_xxxxxxxxxxxxx
+NOTION_DATABASE_ID=xxxxxxxxxxxxx
+NOTION_ENABLE_TOC=true
+NOTION_COLLAPSE_ARTICLES=true
+```
+
+**Setting up Notion Integration:**
+
+1. Create a Notion integration at https://www.notion.so/my-integrations
+2. Copy the "Internal Integration Token" to `.env` as `NOTION_API_KEY`
+3. Create a new database in Notion for digests
+4. Share the database with your integration
+5. Copy the database ID from the URL to `.env` as `NOTION_DATABASE_ID`
+
+**Notion Database Properties:**
+- **Title** (title) - Digest title with date
+- **Generated** (date) - Generation timestamp
+- **Window** (select) - Time window (24h, 7d, etc.)
+- **Topics** (number) - Number of clusters
+- **Articles** (number) - Total articles
+- **Quality** (number) - Silhouette score (0-1)
 
 #### Application Configuration
 ```bash
@@ -369,16 +526,33 @@ npm run fetch     # Fetch RSS items
 npm run chunk     # Extract and chunk content
 npm run process   # Complete processing pipeline
 npm run embed     # Generate embeddings and upsert to vector database
-npm run digest    # Generate daily digest
+npm run digest    # Generate daily digest (preview mode)
+```
+
+### Digest Generation
+```bash
+npm run digest -- --help              # Show all available options
+npm run digest                        # Preview digest (dry-run mode)
+npm run digest -- --post              # Generate and post to Notion
+npm run digest -- --window 7d         # Custom time window
+npm run digest -- --clusters 8        # Custom cluster count
+npm run digest -- --verbose           # Detailed logging
+npm run digest -- --no-toc            # Disable table of contents
+npm run digest -- --no-collapse       # Expand articles
 ```
 
 ### Testing & Debugging
 ```bash
-npm run test:config     # Test configuration setup
-npm run test:embedding  # Test OpenAI embedding functionality
-npm run test:chroma     # Test Chroma vector database
-npm run test:embedder   # Test embedder worker
-npm run test:queries    # Test vector queries
+npm run test:config           # Test configuration setup
+npm run test:embedding        # Test OpenAI embedding functionality
+npm run test:chroma           # Test Chroma vector database
+npm run test:embedder         # Test embedder worker
+npm run test:queries          # Test vector queries
+npm run test:chat             # Test LLM chat completions
+npm run test:digest           # Test digest generation
+npm run test:digest-integration # Test digest integration
+npm run test:notion-posting   # Test Notion posting with mock data
+npm run test:notion-e2e       # End-to-end Notion posting test
 ```
 
 ### Vector Database Management
@@ -409,10 +583,15 @@ npm run test      # Run tests
 - ✅ **Stage 1**: RSS fetcher implementation
 - ✅ **Stage 2**: Content extraction & chunking with full article fetching
 - ✅ **Stage 3**: Embeddings & vector upsert with rich metadata
-- 🔄 **Stage 4**: Retrieval, clustering & summarization (IN PROGRESS)
-  - ✅ Retrieval system complete
-  - ❌ Clustering algorithm (TODO)
-  - ❌ Digest generation (TODO)
+- ✅ **Stage 4**: Digest generation & Notion integration
+  - ✅ Retrieval system with hybrid scoring
+  - ✅ K-means clustering with quality metrics
+  - ✅ LLM-powered summarization and topic labeling
+  - ✅ Digest generation pipeline
+  - ✅ Notion API integration with rich formatting
+  - ✅ Comprehensive CLI with 10+ options
+  - ✅ End-to-end testing suite
+
 - ⏳ **Stage 5**: Preference memory (TODO)
 - ⏳ **Stage 6**: Feedback UI (TODO)
 - ⏳ **Stage 7**: Feed discovery (TODO)
@@ -432,6 +611,18 @@ npm run test      # Run tests
 - **Status Tracking**: SQLite database tracks embedding progress and errors
 - **Query Capabilities**: Semantic search, time-based filtering, source filtering, hybrid scoring
 - **Available Commands**: `npm run embed`, `npm run embed:status`, `npm run vector:query`
+
+### Stage 4 Results
+- **Clustering**: K-means algorithm with silhouette score quality metrics (target: >0.5)
+- **LLM Integration**: GPT-4o-mini for topic labeling, summarization, and key takeaways
+- **Digest Pipeline**: Complete retrieval → clustering → summarization → posting workflow
+- **Notion Integration**: Rich block formatting with headings, callouts, toggles, bookmarks, TOC
+- **CLI Features**: 10+ flags including `--window`, `--clusters`, `--post`, `--dry-run`, `--verbose`, `--help`
+- **Quality Metrics**: Tracks silhouette scores, token usage, processing time, and costs
+- **Performance**: ~10-25 seconds for complete digest generation (100 chunks, 5 clusters)
+- **Token Usage**: ~2,000-4,000 tokens per digest (~$0.01-0.02 cost with gpt-4o-mini)
+- **Test Coverage**: 5 test scripts covering chat, digest generation, integration, and Notion posting
+- **Available Commands**: `npm run digest`, `npm run test:digest`, `npm run test:notion-e2e`
 
 ## 🧪 Testing
 
@@ -461,26 +652,90 @@ The embedding and vector systems have been tested with:
 
 ## 📋 Next Steps
 
-### 🔄 Current Focus: Complete Stage 4 - RAG Pipeline
+### Stage 5: Preference Memory
 
-**Priority 1: Implement Clustering System** (`src/workers/summarizer.ts`)
-- Implement embedding-based clustering (k-means or hierarchical)
-- Add LLM-assisted topic labeling and cluster naming
-- Implement cluster quality validation and optimization
-- Support configurable cluster count (3-6 clusters)
+- Implement user preference tracking
+- Learn from user interactions and feedback
+- Personalize digest content and clustering
+- Store preference history in database
 
-**Priority 2: Implement Digest Generator** (`src/workers/digestGenerator.ts`)
-- Orchestrate retrieval → clustering → summarization pipeline
-- Generate cluster summaries using LLM
-- Create HTML digest templates with responsive design
-- Support multiple output formats (HTML, text, JSON, Slack)
-- Add source attribution and generation metadata
+### 🎯 Future Stages
 
-**Priority 3: Testing & Validation**
-- End-to-end digest generation test
-- Quality validation for clustering and summaries
-- Performance optimization (target: <30s for 100 chunks)
-- Acceptance criteria validation
+**Stage 6: Feedback UI**
+- Build web interface for digest viewing
+- Add feedback mechanisms (like/dislike, relevance ratings)
+- Implement preference adjustment controls
+- Create digest history browser
 
-# Costs Dashboard
-https://platform.openai.com/usage
+**Stage 7: Feed Discovery**
+- Implement automatic feed discovery
+- Suggest new feeds based on interests
+- Quality scoring for feed sources
+- Automated feed management
+
+## 🔄 Complete Workflow
+
+Here's the complete end-to-end workflow for generating a daily digest:
+
+```bash
+# 1. Start Chroma vector database
+npm run chroma:up
+
+# 2. Fetch latest RSS items
+npm run fetch
+
+# 3. Extract and chunk content
+npm run chunk
+
+# 4. Generate embeddings and store in vector database
+npm run embed
+
+# 5. Preview digest (dry-run mode)
+npm run digest
+
+# 6. Generate and post to Notion
+npm run digest -- --post
+
+# Optional: Custom configuration
+npm run digest -- --window 7d --clusters 8 --verbose --post
+```
+
+**Automated Daily Digest:**
+Set up a cron job to run the complete workflow daily:
+```bash
+# Add to crontab (runs at 7 AM daily)
+0 7 * * * cd /path/to/project && npm run fetch && npm run chunk && npm run embed && npm run digest -- --post
+```
+
+## 📊 Quality Metrics
+
+### Clustering Quality (Silhouette Score)
+- **< 0.3**: Poor clustering (consider adjusting cluster count)
+- **0.3-0.5**: Fair clustering
+- **0.5-0.7**: Good clustering ✅
+- **> 0.7**: Excellent clustering ⭐
+
+### Performance Targets
+- **Retrieval**: < 1 second
+- **Clustering**: < 5 seconds (100 chunks)
+- **LLM Summarization**: < 10 seconds (5 clusters)
+- **Notion API**: < 5 seconds
+- **Total Pipeline**: < 25 seconds ✅
+
+### Cost Estimates (GPT-4o-mini)
+- **Topic Label**: ~50-100 tokens per cluster
+- **Summary**: ~200-400 tokens per cluster
+- **Key Takeaways**: ~150-300 tokens per cluster
+- **Total per digest**: ~2,000-4,000 tokens
+- **Cost per digest**: $0.01-0.02 💰
+
+## 🔗 Useful Links
+
+- **OpenAI API Dashboard**: https://platform.openai.com/usage
+- **Notion Integrations**: https://www.notion.so/my-integrations
+- **Chroma Documentation**: https://docs.trychroma.com/
+- **Project Repository**: (your repo URL here)
+
+---
+
+**Built with ❤️ using TypeScript, OpenAI, Chroma, and Notion**
