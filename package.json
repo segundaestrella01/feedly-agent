@@ -80,6 +80,7 @@
     "chromadb": "^3.1.6",
     "dotenv": "^17.2.3",
     "jsdom": "^27.2.0",
+    "ml-kmeans": "7.0.0",
     "openai": "^6.9.1",
     "rss-parser": "^3.13.0"
   }
