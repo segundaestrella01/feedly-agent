@@ -23,6 +23,12 @@ const DEFAULT_CLUSTER_COUNT = parseInt(process.env.CLUSTER_COUNT || '5', 10);
 const DEFAULT_MAX_ITERATIONS = 100;
 const DEFAULT_TOLERANCE = 1e-6;
 
+// Silhouette score quality thresholds
+const SILHOUETTE_STRONG_THRESHOLD = 0.7;
+const SILHOUETTE_REASONABLE_THRESHOLD = 0.5;
+const SILHOUETTE_WEAK_THRESHOLD = 0.25;
+const SILHOUETTE_DECIMAL_PLACES = 3;
+
 /**
  * Calculate cosine similarity between two vectors
  * @param a - First vector
@@ -77,6 +83,107 @@ function findRepresentative(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { embedding, ...result } = bestChunk;
   return result;
+}
+
+/**
+ * Calculate cosine distance between two vectors (1 - cosine similarity)
+ * Used for Silhouette score calculation
+ * @param a - First vector
+ * @param b - Second vector
+ * @returns Cosine distance between 0 and 2
+ */
+function cosineDistance(a: number[], b: number[]): number {
+  return 1 - cosineSimilarity(a, b);
+}
+
+/**
+ * Interpret Silhouette score quality
+ * @param score - Silhouette score between -1 and 1
+ * @returns Quality interpretation string
+ */
+function getSilhouetteQuality(score: number): string {
+  if (score >= SILHOUETTE_STRONG_THRESHOLD) {return 'strong';}
+  if (score >= SILHOUETTE_REASONABLE_THRESHOLD) {return 'reasonable';}
+  if (score >= SILHOUETTE_WEAK_THRESHOLD) {return 'weak';}
+  return 'poor';
+}
+
+/**
+ * Calculate Silhouette score for clustering quality assessment
+ *
+ * The Silhouette score measures how well-separated clusters are:
+ * - Score ranges from -1 to 1
+ * - Values near 1: chunk is well-matched to its cluster
+ * - Values near 0: chunk is on the border between clusters
+ * - Values near -1: chunk may be assigned to wrong cluster
+ *
+ * @param chunks - All chunks with embeddings
+ * @param clusterAssignments - Cluster ID for each chunk
+ * @param centroids - Centroid vectors for each cluster
+ * @returns Average Silhouette score across all chunks
+ */
+function calculateSilhouetteScore(
+  chunks: ChunkWithEmbeddingData[],
+  clusterAssignments: number[],
+  centroids: number[][],
+): number {
+  if (chunks.length <= 1 || centroids.length <= 1) {
+    return 0; // Silhouette score undefined for single cluster or single point
+  }
+
+  let totalScore = 0;
+  let validPoints = 0;
+
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i]!;
+    const clusterIdx = clusterAssignments[i]!;
+
+    // Calculate a(i): average distance to points in same cluster
+    let intraClusterDist = 0;
+    let intraClusterCount = 0;
+
+    for (let j = 0; j < chunks.length; j++) {
+      if (i !== j && clusterAssignments[j] === clusterIdx) {
+        intraClusterDist += cosineDistance(chunk.embedding, chunks[j]!.embedding);
+        intraClusterCount++;
+      }
+    }
+
+    const a = intraClusterCount > 0 ? intraClusterDist / intraClusterCount : 0;
+
+    // Calculate b(i): minimum average distance to points in other clusters
+    let minInterClusterDist = Infinity;
+
+    for (let otherCluster = 0; otherCluster < centroids.length; otherCluster++) {
+      if (otherCluster === clusterIdx) {continue;}
+
+      let interClusterDist = 0;
+      let interClusterCount = 0;
+
+      for (let j = 0; j < chunks.length; j++) {
+        if (clusterAssignments[j] === otherCluster) {
+          interClusterDist += cosineDistance(chunk.embedding, chunks[j]!.embedding);
+          interClusterCount++;
+        }
+      }
+
+      if (interClusterCount > 0) {
+        const avgDist = interClusterDist / interClusterCount;
+        minInterClusterDist = Math.min(minInterClusterDist, avgDist);
+      }
+    }
+
+    const b = minInterClusterDist;
+
+    // Calculate Silhouette score for this point
+    if (intraClusterCount > 0 && b !== Infinity) {
+      const s = (b - a) / Math.max(a, b);
+      totalScore += s;
+      validPoints++;
+    }
+  }
+
+  return validPoints > 0 ? totalScore / validPoints : 0;
 }
 
 /**
@@ -160,6 +267,13 @@ export function clusterChunks(
   // Sort clusters by size (largest first)
   clusters.sort((a, b) => b.size - a.size);
 
+  // Calculate Silhouette score for quality assessment
+  let silhouetteScore: number | undefined;
+  if (clusters.length > 1 && chunks.length > 1) {
+    silhouetteScore = calculateSilhouetteScore(chunks, result.clusters, result.centroids);
+    console.log(`📊 Silhouette score: ${silhouetteScore.toFixed(SILHOUETTE_DECIMAL_PLACES)} (quality: ${getSilhouetteQuality(silhouetteScore)})`);
+  }
+
   // Log cluster statistics
   console.log(`✅ Created ${clusters.length} clusters:`);
   clusters.forEach((cluster, idx) => {
@@ -171,6 +285,7 @@ export function clusterChunks(
     totalChunks: chunks.length,
     clusterCount: clusters.length,
     timestamp: new Date().toISOString(),
+    silhouetteScore,
   };
 }
 
