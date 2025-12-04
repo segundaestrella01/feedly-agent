@@ -327,7 +327,7 @@ export class VectorClient {
   /**
    * Get all vectors with their embeddings for clustering
    * @param limit Maximum number of vectors to return
-   * @returns Array of chunks with embeddings
+   * @returns Array of chunks with embeddings, sorted by published_date (most recent first)
    */
   async getAllWithEmbeddings(limit = 100): Promise<ChunkWithEmbeddingData[]> {
     await this.ensureInitialized();
@@ -363,6 +363,13 @@ export class VectorClient {
       }
 
       console.log(`✅ Retrieved ${chunksWithEmbeddings.length} chunks with embeddings`);
+      // Sort by published_date (most recent first)
+      chunksWithEmbeddings.sort((a, b) => {
+        const dateA = new Date(a.metadata.published_date);
+        const dateB = new Date(b.metadata.published_date);
+        return dateB.getTime() - dateA.getTime();
+      });
+
       return chunksWithEmbeddings;
     } catch (error) {
       console.error('❌ Failed to get chunks with embeddings:', error);

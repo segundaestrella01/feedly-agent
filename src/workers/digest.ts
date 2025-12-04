@@ -18,7 +18,7 @@ import type {
 } from '../types/index.js';
 
 // Constants
-const MAX_CHUNKS_TO_RETRIEVE = 200;
+const MAX_CHUNKS_TO_RETRIEVE = 1000; // Retrieve all chunks for proper date filtering
 const ESTIMATED_TOKENS_PER_CLUSTER = 700;
 const GPT4O_MINI_INPUT_COST_PER_1M = 0.150;
 const GPT4O_MINI_OUTPUT_COST_PER_1M = 0.600;
