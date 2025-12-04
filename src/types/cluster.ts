@@ -26,6 +26,7 @@ export interface ClusteringResult {
   totalChunks: number;
   clusterCount: number;
   timestamp: string;
+  silhouetteScore?: number; // Cluster quality metric (-1 to 1, higher is better)
 }
 
 /**
