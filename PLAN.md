@@ -170,6 +170,24 @@ SCHEDULE_CRON="0 7 * * *"
 
 # 🔮 Follow-up Improvements
 
+### Complete Processing Pipeline
+- **Problem**: The `process` script currently only runs the chunking step, not a complete pipeline
+- **Current State**: `npm run process` calls `processContent()` which only executes Stage 2 (chunking)
+- **Proposed Solution**: Extend the processor to orchestrate multiple stages:
+  - Stage 2: Content extraction and chunking (✅ implemented)
+  - Stage 3: Embeddings & Vector Upsert (TODO)
+  - Stage 4: Retrieval, Clustering & Summarization (TODO)
+- **Benefits**:
+  - Single command to run the entire content processing pipeline
+  - Reduces manual steps in the workflow
+  - Better error handling across stages
+  - Easier to schedule as a single cron job
+- **Implementation Notes**:
+  - Add optional flags to control which stages to run
+  - Implement proper error handling and rollback
+  - Add progress reporting across stages
+  - Consider making it idempotent (safe to re-run)
+
 ### Automatic k Optimization for Clustering
 - **Problem**: Currently, the number of clusters (k) is fixed and may not be optimal for the data
 - **Current State**: Silhouette score is calculated to measure cluster quality but no action is taken when it indicates poor clustering
