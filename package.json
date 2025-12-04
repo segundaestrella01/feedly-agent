@@ -12,7 +12,7 @@
     "chunk": "tsx src/workers/chunker.ts",
     "process": "tsx src/workers/processor.ts",
     "embed": "tsx src/workers/embedder.ts",
-    "digest": "tsx src/workers/digestGenerator.ts",
+    "digest": "tsx src/workers/digest.ts",
     "chroma:up": "docker-compose up -d chroma",
     "chroma:down": "docker-compose down chroma",
     "chroma:logs": "docker-compose logs -f chroma",
