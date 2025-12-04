@@ -199,6 +199,7 @@ const result = await chunkContent('./data/raw/specific-file.json');
     }
   ]
 }
+```
 
 ### Stage 3: Embeddings & Vector Upsert ✅
 

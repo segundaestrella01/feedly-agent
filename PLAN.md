@@ -95,13 +95,15 @@ SCHEDULE_CRON="0 7 * * *"
 1. Implement `retriever.ts`: ✅
    - Query vector DB for relevant chunks (e.g., last 24h).
    - Select top-N chunks.
-2. Implement `summarizer.ts`:
+2. Implement `summarizer.ts`: ✅
    - Cluster chunks using k-means on embeddings.
    - Support configurable cluster count (3-6 clusters).
-3. Implement `digestGenerator.ts`:
+   - Calculate Silhouette score for cluster quality.
+3. Implement `digestGenerator.ts`: 🚧 IN PROGRESS
    - Call LLM to summarize clusters.
-   - Compose daily digest (HTML/email/Slack).
-4. Acceptance: `npm run digest` prints digest with clusters + links.
+   - Compose daily digest and post to Notion.
+   - See `STAGE4_DIGEST_PLAN.md` for detailed implementation plan.
+4. Acceptance: `npm run digest` creates Notion page with clusters + links.
 
 ---
 
@@ -146,27 +148,6 @@ SCHEDULE_CRON="0 7 * * *"
 4. Secure endpoints with `APP_SECRET`.
 5. Acceptance: Daily digest runs automatically.
 
----
-
-# 💡 Useful LLM Prompts
-
-**Clustering**
-```
-Group these article excerpts into 4-6 coherent topics. Return JSON: {id, label, summary(2 sentences), representative: [{title,url}]}.
-Input: [{title,excerpt,url}, ...]
-```
-
-**Summarization**
-```
-Summarize these N excerpts into 2 sentences and 3 bullets with key takeaways.
-```
-
-**Preference Extraction**
-```
-Given titles and excerpts that the user liked, return 5 keywords/tags representing user interests.
-```
-
----
 
 # 📝 Acceptance Criteria (MVP)
 - `npm run fetch` retrieves RSS items.  
@@ -178,11 +159,12 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
 ---
 
 # ✅ Next Immediate Tasks
-1. Initialize repo and install deps (Stage 0).
-2. Implement & test RSS fetcher.
-3. Chunk 5 items locally.
-4. Wire embedding + vector upsert and verify nearest neighbors.
-5. Implement retrieval + LLM summarization for single digest run.
+**Current Focus: Stage 4 - Digest Generation**
+- See `STAGE4_DIGEST_PLAN.md` for detailed implementation plan
+- Start with Phase 1: Add chat completion support to LLMClient
+- Then Phase 2: Implement cluster summarization
+- Then Phase 3: Build digest composition pipeline and Notion client
+- Finally Phase 4: Add Notion integration and CLI options
 
 ---
 
@@ -206,7 +188,22 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
   - Set reasonable bounds (min k=2, max k=10 or sqrt(n))
   - Consider computational cost vs. quality tradeoff
 
-### LLM-Assisted Topic Labeling
-- Add chat completion capability to `LLMClient` for generating human-readable cluster labels
-- Send representative chunks from each cluster to LLM with prompt to generate descriptive topic names (e.g., "AI Industry Updates", "Cybersecurity Threats")
-- Currently clusters use keyword extraction or metadata-based labels as a simpler alternative
+### Enhanced Digest Features
+- **Personalization**: Use preference vectors to re-rank articles within clusters
+- **Trend Detection**: Highlight emerging topics or trending articles with special callouts
+- **Source Diversity**: Ensure clusters include articles from multiple sources
+- **Time-based Grouping**: Separate breaking news from evergreen content
+- **Notion Database Views**: Create filtered views (by quality score, topic count, time window)
+- **Notion Relations**: Link related digests or create topic tracking across digests
+- **Notion Automation**: Use Notion's built-in automation for notifications
+- **Scheduling**: Use node-cron to generate and post digests automatically to Notion
+- **Rich Media**: Include article images/thumbnails in Notion bookmarks
+- **Tagging**: Add Notion tags/multi-select properties for topics
+
+### Advanced Summarization
+- **Multi-level Summaries**: Generate both brief (1 sentence) and detailed (paragraph) summaries
+- **Quote Extraction**: Pull notable quotes from articles
+- **Entity Recognition**: Identify and highlight key people, companies, technologies
+- **Sentiment Analysis**: Indicate overall sentiment (positive/negative/neutral) per cluster
+- **Controversy Detection**: Flag clusters with conflicting viewpoints
+- **Related Topics**: Suggest connections between clusters
