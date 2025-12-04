@@ -135,8 +135,8 @@ export interface DigestGenerationResult {
  * Notion-specific formatting options
  */
 export interface NotionDigestOptions {
-  /** Notion database ID to add entry to */
-  databaseId: string;
+  /** Notion database ID to add entry to (optional, defaults to NOTION_DATABASE_ID env var) */
+  databaseId?: string;
   /** Whether to enable table of contents */
   enableTOC?: boolean;
   /** Whether to collapse articles in toggle blocks */

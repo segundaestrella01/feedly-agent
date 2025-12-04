@@ -4,6 +4,7 @@
  */
 
 import { LLMClient } from '../lib/llmClient.js';
+import { NotionClient } from '../lib/notionClient.js';
 import { clusterRecentContent } from './summarizer.js';
 import type {
   Cluster,
@@ -634,10 +635,72 @@ async function runDigestCLI(): Promise<void> {
     });
   }
 
-  // Note: Notion posting will be added in Phase 4.2
+  // Post to Notion (unless dry-run)
   if (!options.dryRun) {
-    console.log('\n⚠️  Notion posting not yet implemented (Phase 4.2)');
-    console.log('   Run with --dry-run to preview digest');
+    console.log('\n📤 Posting to Notion...');
+
+    try {
+      // Initialize Notion client
+      const notionClient = new NotionClient();
+
+      // Post digest to Notion
+      const pageId = await notionClient.addDigestEntry(digest, {
+        enableTOC: options.enableTOC,
+        collapseArticles: options.collapseArticles,
+        icon: '📰',
+      });
+
+      // Construct Notion page URL
+      const pageUrl = `https://notion.so/${pageId.replace(/-/g, '')}`;
+
+      console.log('✅ Successfully posted to Notion!');
+      console.log(`📄 Page URL: ${pageUrl}`);
+
+      if (options.verbose) {
+        console.log(`   Page ID: ${pageId}`);
+        console.log(`   Database ID: ${process.env.NOTION_DATABASE_ID}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('NOTION_API_KEY')) {
+          console.error('\n❌ Notion API key not configured');
+          console.error('   Set NOTION_API_KEY in your .env file');
+          console.error('   See README.md for Notion setup instructions');
+        } else if (error.message.includes('NOTION_DATABASE_ID')) {
+          console.error('\n❌ Notion database ID not configured');
+          console.error('   Set NOTION_DATABASE_ID in your .env file');
+          console.error('   See README.md for Notion setup instructions');
+        } else if (error.message.includes('object_not_found') || error.message.includes('Could not find database')) {
+          console.error('\n❌ Notion database not found or not shared with integration');
+          console.error('   Make sure to:');
+          console.error('   1. Create a database in Notion');
+          console.error('   2. Share the database with your integration');
+          console.error('   3. Copy the database ID to NOTION_DATABASE_ID in .env');
+          console.error('   See README.md for detailed setup instructions');
+        } else if (error.message.includes('unauthorized') || error.message.includes('invalid_grant')) {
+          console.error('\n❌ Notion API key is invalid or expired');
+          console.error('   Check your NOTION_API_KEY in .env');
+          console.error('   You may need to regenerate the integration token');
+        } else {
+          console.error('\n❌ Failed to post to Notion:', error.message);
+          if (options.verbose) {
+            console.error('   Full error:', error);
+          }
+        }
+      } else {
+        console.error('\n❌ Failed to post to Notion:', error);
+      }
+      throw error;
+    }
+  } else {
+    console.log('\n🔍 Dry-run mode: Digest preview');
+    console.log(`   Title: ${digest.title}`);
+    console.log(`   Clusters: ${digest.clusters.length}`);
+    console.log(`   Total Articles: ${digest.metadata.totalArticles}`);
+    if (digest.metadata.avgSilhouetteScore !== undefined) {
+      console.log(`   Quality Score: ${digest.metadata.avgSilhouetteScore.toFixed(3)}`);
+    }
+    console.log('\n   Run with --post to publish to Notion');
   }
 
   console.log('\n✅ Digest generation complete!');
