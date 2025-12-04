@@ -33,6 +33,8 @@
     "test:digest-all": "npm run test:digest-types && npm run test:digest-summarization && npm run test:digest-edge-cases",
     "test:notion": "tsx src/scripts/testNotionClient.ts",
     "test:digest-generation": "tsx src/scripts/testDigestGeneration.ts",
+    "test:digest-integration": "tsx src/scripts/testDigestIntegration.ts",
+    "test:digest-complete": "tsx src/scripts/testDigestComplete.ts",
     "test:config": "tsx src/scripts/testConfig.ts",
     "stage36:summary": "tsx src/scripts/stage36Summary.ts",
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
