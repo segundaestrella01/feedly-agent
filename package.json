@@ -32,6 +32,8 @@
     "test:digest-edge-cases": "tsx src/scripts/testDigestEdgeCases.ts",
     "test:digest-all": "npm run test:digest-types && npm run test:digest-summarization && npm run test:digest-edge-cases",
     "test:notion": "tsx src/scripts/testNotionClient.ts",
+    "test:notion-posting": "tsx src/scripts/testNotionPosting.ts",
+    "test:notion-e2e": "tsx src/scripts/testNotionE2E.ts",
     "test:digest-generation": "tsx src/scripts/testDigestGeneration.ts",
     "test:digest-integration": "tsx src/scripts/testDigestIntegration.ts",
     "test:digest-complete": "tsx src/scripts/testDigestComplete.ts",
