@@ -5,6 +5,7 @@ import type {
   ChunkWithEmbedding,
   QueryResult,
   CollectionInfo,
+  ChunkWithEmbeddingData,
 } from '../types/index.js';
 
 // Vector database client (Chroma)
@@ -299,11 +300,9 @@ export class VectorClient {
       });
 
       const queryResults: QueryResult[] = [];
-      
       if (results.ids && results.documents && results.metadatas) {
         for (let i = 0; i < results.ids.length; i++) {
           const metadata = results.metadatas[i] as Record<string, unknown>;
-          
           queryResults.push({
             id: results.ids[i],
             content: results.documents[i] || '',
@@ -321,6 +320,52 @@ export class VectorClient {
       return queryResults;
     } catch (error) {
       console.error('❌ Failed to get all vectors:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all vectors with their embeddings for clustering
+   * @param limit Maximum number of vectors to return
+   * @returns Array of chunks with embeddings
+   */
+  async getAllWithEmbeddings(limit = 100): Promise<ChunkWithEmbeddingData[]> {
+    await this.ensureInitialized();
+
+    try {
+      const results = await this.collection!.get({
+        limit,
+        include: ['documents', 'metadatas', 'embeddings'],
+      });
+
+      const chunksWithEmbeddings: ChunkWithEmbeddingData[] = [];
+
+      if (results.ids && results.documents && results.metadatas && results.embeddings) {
+        for (let i = 0; i < results.ids.length; i++) {
+          const metadata = results.metadatas[i] as Record<string, unknown>;
+          const embedding = results.embeddings[i] as number[];
+
+          if (embedding) {
+            chunksWithEmbeddings.push({
+              id: results.ids[i],
+              content: results.documents[i] || '',
+              distance: 0,
+              score: 1,
+              embedding,
+              metadata: {
+                ...((metadata as unknown) as ChunkMetadata),
+                categories: (metadata.categories as string) ? (metadata.categories as string).split(',').filter((c: string) => c.length > 0) : [],
+                tags: (metadata.tags as string) ? (metadata.tags as string).split(',').filter((t: string) => t.length > 0) : [],
+              },
+            });
+          }
+        }
+      }
+
+      console.log(`✅ Retrieved ${chunksWithEmbeddings.length} chunks with embeddings`);
+      return chunksWithEmbeddings;
+    } catch (error) {
+      console.error('❌ Failed to get chunks with embeddings:', error);
       throw error;
     }
   }
