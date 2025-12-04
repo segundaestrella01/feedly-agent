@@ -6,6 +6,9 @@ dotenv.config();
 
 /**
  * Fetcher worker: retrieves RSS items and saves to data/raw
+ * Fetches items from configured RSS feeds within the specified time window
+ * @returns Array of fetched RSS items, or undefined if no items found
+ * @throws Error if RSS fetch fails
  */
 export async function fetchRSSItems() {
   try {

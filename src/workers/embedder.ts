@@ -21,12 +21,19 @@ const SEPARATOR_LENGTH = 60;
 const MILLISECONDS_IN_SECOND = 1000;
 const DECIMAL_PLACES = 2;
 
-// Embedder worker: generates embeddings and upserts to vector DB
+/**
+ * Embedder Worker: Generates embeddings and upserts to vector database
+ * Processes chunk files, generates embeddings via OpenAI, and stores in Chroma
+ */
 export class EmbedderWorker {
   private vectorClient: VectorClient;
   private dbClient: DatabaseClient;
   private stats: ProcessingStats;
 
+  /**
+   * Create a new EmbedderWorker instance
+   * Initializes vector and database clients with default configuration
+   */
   constructor() {
     this.vectorClient = new VectorClient();
     this.dbClient = new DatabaseClient();
@@ -44,6 +51,8 @@ export class EmbedderWorker {
 
   /**
    * Main entry point: process all chunk files and embed to vector DB
+   * Initializes databases, processes chunk files in batches, and tracks progress
+   * @throws Error if embedding or database operations fail
    */
   async embedAndUpsert(): Promise<void> {
     try {
@@ -121,6 +130,7 @@ export class EmbedderWorker {
 
   /**
    * Find all chunk files in the chunks directory
+   * @returns Array of absolute paths to chunk JSON files, sorted chronologically
    */
   private async getChunkFiles(): Promise<string[]> {
     try {
@@ -139,6 +149,9 @@ export class EmbedderWorker {
 
   /**
    * Process a single chunk file
+   * Loads chunks, generates embeddings, and upserts to vector database
+   * @param filePath - Absolute path to the chunk JSON file
+   * @throws Error if file processing fails
    */
   private async processChunkFile(filePath: string): Promise<void> {
     const fileName = path.basename(filePath);
@@ -225,6 +238,9 @@ export class EmbedderWorker {
 
   /**
    * Convert raw chunks to vector database format
+   * Transforms chunk data into the format expected by the vector client
+   * @param rawChunks - Array of raw chunks from chunk files
+   * @returns Array of chunks formatted for vector database upsert
    */
   private convertChunksToVectorFormat(rawChunks: RawChunk[]): ChunkWithEmbedding[] {
     return rawChunks.map(chunk => {
@@ -263,6 +279,9 @@ export class EmbedderWorker {
 
   /**
    * Split chunks into batches for processing
+   * @param items - Array of items to batch
+   * @param batchSize - Maximum number of items per batch
+   * @returns Array of batches
    */
   private createBatches<T>(items: T[], batchSize: number): T[][] {
     const batches: T[][] = [];
@@ -273,7 +292,9 @@ export class EmbedderWorker {
   }
 
   /**
-   * Sleep utility function
+   * Sleep utility function for rate limiting
+   * @param ms - Number of milliseconds to sleep
+   * @returns Promise that resolves after the specified delay
    */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => globalThis.setTimeout(resolve, ms));
@@ -281,6 +302,7 @@ export class EmbedderWorker {
 
   /**
    * Print final processing statistics
+   * Displays summary of processed files, chunks, errors, and timing
    */
   private async printFinalStats(): Promise<void> {
     console.log('\n' + '='.repeat(SEPARATOR_LENGTH));
@@ -326,6 +348,8 @@ export class EmbedderWorker {
 
 /**
  * Main function to run the embedder worker
+ * Creates an EmbedderWorker instance and executes the embedding pipeline
+ * @returns Promise that resolves when all chunks are processed
  */
 export async function embedAndUpsert(): Promise<void> {
   const worker = new EmbedderWorker();

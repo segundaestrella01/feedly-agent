@@ -25,6 +25,10 @@ const DEFAULT_TOLERANCE = 1e-6;
 
 /**
  * Calculate cosine similarity between two vectors
+ * @param a - First vector
+ * @param b - Second vector
+ * @returns Cosine similarity score between -1 and 1
+ * @throws Error if vectors have different dimensions
  */
 function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) {
@@ -49,6 +53,10 @@ function cosineSimilarity(a: number[], b: number[]): number {
 
 /**
  * Find the representative chunk for a cluster (closest to centroid)
+ * Selects the chunk with highest cosine similarity to the cluster centroid
+ * @param chunks - Array of chunks with embeddings in the cluster
+ * @param centroid - Cluster centroid vector
+ * @returns The most representative chunk (without embedding property)
  */
 function findRepresentative(
   chunks: ChunkWithEmbeddingData[],
@@ -255,6 +263,8 @@ export async function clusterRecentContent(
 
 /**
  * Parse time window string to milliseconds
+ * @param timeWindow - Time window string (e.g., '1h', '24h', '7d')
+ * @returns Duration in milliseconds
  */
 function parseTimeWindow(timeWindow: TimeWindow): number {
   const timeMap: Record<TimeWindow, number> = {
@@ -271,6 +281,10 @@ function parseTimeWindow(timeWindow: TimeWindow): number {
 
 /**
  * Main summarize function - clusters content for digest generation
+ * Entry point for the summarization pipeline
+ * @param timeWindow - Time window for recent content (default: '24h')
+ * @param clusterCount - Number of clusters to create (default: 5)
+ * @returns ClusteringResult with organized content clusters
  */
 export async function summarizeContent(
   timeWindow: TimeWindow = '24h',

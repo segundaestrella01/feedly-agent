@@ -238,6 +238,9 @@ export async function combineAndRankResults(
 
 /**
  * Main retrieval function with comprehensive options
+ * Combines query-based, topic-based, and time-based retrieval strategies
+ * @param options - Configuration including query, topics, time window, and scoring options
+ * @returns Array of relevant chunks ranked by hybrid scoring
  */
 export async function retrieveRelevantChunks(
   options: RetrievalOptions & { 
@@ -292,6 +295,8 @@ export async function retrieveRelevantChunks(
 
 /**
  * Parse time window string to milliseconds
+ * @param timeWindow - Time window string (e.g., '1h', '24h', '7d')
+ * @returns Duration in milliseconds
  */
 function parseTimeWindow(timeWindow: TimeWindow): number {
   const timeMap: Record<TimeWindow, number> = {
@@ -308,6 +313,8 @@ function parseTimeWindow(timeWindow: TimeWindow): number {
 
 /**
  * Convert metadata filters to Chroma-compatible format
+ * @param filters - Application-level metadata filters
+ * @returns Chroma-compatible filter object, or undefined if no filters
  */
 function convertFiltersToChroma(filters: MetadataFilters): Record<string, string | number | boolean> | undefined {
   const chromaFilters: Record<string, string | number | boolean> = {};
@@ -334,7 +341,9 @@ function convertFiltersToChroma(filters: MetadataFilters): Record<string, string
 }
 
 /**
- * Remove duplicate chunks based on content similarity
+ * Remove duplicate chunks based on source URL and chunk index
+ * @param results - Array of query results that may contain duplicates
+ * @returns Deduplicated array of query results
  */
 function removeDuplicates(results: QueryResult[]): QueryResult[] {
   const seen = new Set<string>();
@@ -350,6 +359,10 @@ function removeDuplicates(results: QueryResult[]): QueryResult[] {
 
 /**
  * Apply diversity filtering to avoid too many chunks from same source
+ * Distributes results evenly across sources while respecting the limit
+ * @param results - Array of query results to filter
+ * @param limit - Maximum number of results to return
+ * @returns Diversified array of query results
  */
 function applyDiversityFilter(results: QueryResult[], limit: number): QueryResult[] {
   const sourceGroups = new Map<string, QueryResult[]>();

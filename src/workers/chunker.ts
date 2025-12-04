@@ -11,7 +11,11 @@ const CHUNK_SIZE = 1500; // Target characters per chunk
 const CHUNK_OVERLAP = 150; // Overlap between chunks for context preservation
 
 /**
- * Split text into chunks with overlap
+ * Split text into chunks with overlap for context preservation
+ * @param text - The text content to split into chunks
+ * @param chunkSize - Target number of characters per chunk
+ * @param overlap - Number of overlapping characters between consecutive chunks
+ * @returns Array of text chunks with smart sentence/paragraph boundary splitting
  */
 function splitTextIntoChunks(text: string, chunkSize: number = CHUNK_SIZE, overlap: number = CHUNK_OVERLAP): string[] {
   if (text.length <= chunkSize) {
@@ -65,6 +69,9 @@ function splitTextIntoChunks(text: string, chunkSize: number = CHUNK_SIZE, overl
 
 /**
  * Extract and clean text content from RSS item
+ * Removes HTML tags, cleans whitespace, and decodes HTML entities
+ * @param item - The RSS item to extract text from
+ * @returns Cleaned plain text content
  */
 function extractTextContent(item: RSSItem): string {
   // Use content field if available, fall back to contentSnippet
@@ -88,7 +95,10 @@ function extractTextContent(item: RSSItem): string {
 }
 
 /**
- * Fetch full article content from URL
+ * Fetch full article content from URL using web scraping
+ * Extracts main content area and removes navigation, ads, and other non-content elements
+ * @param url - The URL of the article to fetch
+ * @returns Extracted article text content, or empty string on failure
  */
 async function fetchArticleContent(url: string): Promise<string> {
   try {
@@ -177,6 +187,10 @@ async function fetchArticleContent(url: string): Promise<string> {
 
 /**
  * Extract and clean text content from RSS item with optional full article fetch
+ * Falls back to fetching the full article if RSS content is too short
+ * @param item - The RSS item to extract text from
+ * @param fetchFullArticle - Whether to fetch full article content if RSS snippet is short
+ * @returns Complete article text content
  */
 async function extractFullTextContent(item: RSSItem, fetchFullArticle = true): Promise<string> {
   // Start with RSS content
@@ -196,6 +210,10 @@ async function extractFullTextContent(item: RSSItem, fetchFullArticle = true): P
 
 /**
  * Generate a unique chunk ID with format: {url}-{chunk number}-of-{total chunks}
+ * @param itemUrl - The source URL of the article
+ * @param chunkIndex - Zero-based index of this chunk
+ * @param totalChunks - Total number of chunks for this article
+ * @returns Unique identifier string for the chunk
  */
 function generateChunkId(itemUrl: string, chunkIndex: number, totalChunks: number): string {
   // Clean the URL to make it a valid ID (remove protocol and replace special chars)
@@ -204,14 +222,21 @@ function generateChunkId(itemUrl: string, chunkIndex: number, totalChunks: numbe
 }
 
 /**
- * Count words in text
+ * Count the number of words in a text string
+ * @param text - The text to count words in
+ * @returns Number of words in the text
  */
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 }
 
 /**
- * Process RSS items and chunk their content
+ * Process RSS items and chunk their content for embedding
+ * Reads RSS data, extracts article content, and splits into manageable chunks
+ * @param inputFilePath - Optional path to specific RSS JSON file; if not provided, uses most recent
+ * @param fetchFullArticles - Whether to fetch full article content from URLs
+ * @returns ChunkResult containing all processed chunks and statistics
+ * @throws Error if no RSS data files found or processing fails
  */
 export async function chunkContent(inputFilePath?: string, fetchFullArticles = true): Promise<ChunkResult> {
   try {

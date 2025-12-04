@@ -3,8 +3,11 @@ import type { ChunkResult } from '../types/index.js';
 
 /**
  * Combined processor worker for stage implementation
- * Currently handles: chunking
- * TODO: Add embedding + upserting in future stages
+ * Orchestrates the content processing pipeline including chunking
+ * @param inputFilePath - Optional path to specific RSS JSON file; if not provided, uses most recent
+ * @param fetchFullArticles - Whether to fetch full article content from URLs
+ * @returns ChunkResult containing all processed chunks and statistics
+ * @throws Error if processing fails
  */
 export async function processContent(inputFilePath?: string, fetchFullArticles = true): Promise<ChunkResult> {
   try {
