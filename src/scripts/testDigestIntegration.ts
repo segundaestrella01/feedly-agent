@@ -10,7 +10,7 @@
  */
 
 import 'dotenv/config';
-import { generateDigest } from '../workers/digestGenerator.js';
+import { generateDigest } from '../workers/digest.js';
 import { NotionClient } from '../lib/notionClient.js';
 import type { DigestContent } from '../types/index.js';
 

@@ -15,7 +15,7 @@ import {
   generateTopicLabel,
   formatArticleReferences,
   summarizeCluster,
-} from '../workers/digestGenerator.js';
+} from '../workers/digest.js';
 import type { Cluster, ChunkMetadata, QueryResult } from '../types/index.js';
 
 // Helper to create mock metadata
