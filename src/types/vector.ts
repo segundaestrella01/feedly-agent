@@ -7,11 +7,6 @@
 
 import type { RawChunk } from './content.js';
 
-// Raw chunk structure from chunk files (extend content type for metadata operations)
-export interface RawChunkWithMetadata extends RawChunk {
-  // Inherits all properties from RawChunk
-}
-
 // Core vector types
 export interface ChunkMetadata {
   // Source information

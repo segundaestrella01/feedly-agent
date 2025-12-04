@@ -17,6 +17,9 @@ export * from './embedding.js';
 // Vector Database Types
 export * from './vector.js';
 
+// Clustering Types
+export * from './cluster.js';
+
 // Retrieval System Types
 export * from './retrieval.js';
 
