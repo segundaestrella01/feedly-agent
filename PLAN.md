@@ -92,12 +92,15 @@ SCHEDULE_CRON="0 7 * * *"
 ---
 
 ### **Stage 4 — RAG - Retrieval, Clustering & Summarization**
-1. Implement `retriever.ts`:
+1. Implement `retriever.ts`: ✅
    - Query vector DB for relevant chunks (e.g., last 24h).
    - Select top-N chunks.
-   - Optional clustering: embeddings or LLM-assisted.
-2. Call LLM to summarize clusters.
-3. Compose daily digest (HTML/email/Slack).
+2. Implement `summarizer.ts`:
+   - Cluster chunks using k-means on embeddings.
+   - Support configurable cluster count (3-6 clusters).
+3. Implement `digestGenerator.ts`:
+   - Call LLM to summarize clusters.
+   - Compose daily digest (HTML/email/Slack).
 4. Acceptance: `npm run digest` prints digest with clusters + links.
 
 ---
@@ -175,8 +178,17 @@ Given titles and excerpts that the user liked, return 5 keywords/tags representi
 ---
 
 # ✅ Next Immediate Tasks
-1. Initialize repo and install deps (Stage 0).  
-2. Implement & test RSS fetcher.  
-3. Chunk 5 items locally.  
-4. Wire embedding + vector upsert and verify nearest neighbors.  
+1. Initialize repo and install deps (Stage 0).
+2. Implement & test RSS fetcher.
+3. Chunk 5 items locally.
+4. Wire embedding + vector upsert and verify nearest neighbors.
 5. Implement retrieval + LLM summarization for single digest run.
+
+---
+
+# 🔮 Follow-up Improvements
+
+### LLM-Assisted Topic Labeling
+- Add chat completion capability to `LLMClient` for generating human-readable cluster labels
+- Send representative chunks from each cluster to LLM with prompt to generate descriptive topic names (e.g., "AI Industry Updates", "Cybersecurity Threats")
+- Currently clusters use keyword extraction or metadata-based labels as a simpler alternative
