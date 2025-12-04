@@ -2,6 +2,44 @@
 
 A personal AI assistant that fetches RSS feeds, embeds and clusters content, and generates a daily digest tailored to your interests using a Retrieval-Augmented Generation (RAG) workflow.
 
+## 🔄 Workflow Overview
+
+```mermaid
+graph TB
+    Start([Start]) --> Fetch[📥 Fetch RSS Items<br/>npm run fetch]
+    Fetch --> Extract[📄 Extract & Chunk Content<br/>npm run chunk]
+    Extract --> Embed[🧠 Generate Embeddings<br/>npm run embed]
+    Embed --> Store[(🗄️ Chroma Vector DB<br/>Persistent Storage)]
+
+    Store --> Digest[📰 Generate Digest<br/>npm run digest]
+
+    subgraph "Digest Generation Pipeline"
+        Digest --> Retrieve[🔍 Retrieve Recent Chunks<br/>Time-based + Semantic Search]
+        Retrieve --> Cluster[📊 K-Means Clustering<br/>Group Similar Content]
+        Cluster --> Summarize[✨ LLM Summarization<br/>Topic Labels + Key Takeaways]
+        Summarize --> Format[📝 Format Digest<br/>Rich Content Structure]
+    end
+
+    Format --> Decision{Post to Notion?}
+    Decision -->|--post flag| Notion[📤 Post to Notion<br/>Rich Formatted Page]
+    Decision -->|--dry-run| Preview[👁️ Preview Only<br/>Console Output]
+
+    Notion --> End([✅ Complete])
+    Preview --> End
+
+    style Start fill:#e1f5e1
+    style End fill:#e1f5e1
+    style Store fill:#e3f2fd
+    style Digest fill:#fff3e0
+    style Notion fill:#f3e5f5
+    style Preview fill:#fce4ec
+```
+
+**Key Stages:**
+- **Stage 1-2**: Data Collection (Fetch → Extract → Chunk)
+- **Stage 3**: Vector Embeddings (Embed → Store)
+- **Stage 4**: Digest Generation (Retrieve → Cluster → Summarize → Post)
+
 ## 🎯 Current Capabilities
 
 ✅ **Fetch** RSS feeds from multiple sources
