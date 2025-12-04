@@ -420,3 +420,239 @@ export async function generateDigest(
     throw error;
   }
 }
+
+// CLI execution
+const CLI_ARGS_START = 2;
+const DEFAULT_TIME_WINDOW: TimeWindow = '24h';
+const DEFAULT_CLUSTER_COUNT = 5;
+const MIN_CLUSTER_COUNT = 2;
+const MAX_CLUSTER_COUNT = 10;
+
+/**
+ * Parse command-line arguments
+ */
+interface CLIOptions {
+  window: TimeWindow;
+  clusters: number;
+  dryRun: boolean;
+  verbose: boolean;
+  enableTOC: boolean;
+  collapseArticles: boolean;
+  help: boolean;
+}
+
+function parseArgs(args: string[]): CLIOptions {
+  const options: CLIOptions = {
+    window: process.env.DIGEST_TIME_WINDOW as TimeWindow || DEFAULT_TIME_WINDOW,
+    clusters: parseInt(process.env.DIGEST_CLUSTER_COUNT || String(DEFAULT_CLUSTER_COUNT), 10),
+    dryRun: process.env.NOTION_DRY_RUN !== 'false',
+    verbose: false,
+    enableTOC: process.env.NOTION_ENABLE_TOC !== 'false',
+    collapseArticles: process.env.NOTION_COLLAPSE_ARTICLES === 'true',
+    help: false,
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    switch (arg) {
+    case '--window':
+    case '-w':
+      if (i + 1 < args.length) {
+        const nextArg = args[++i];
+        if (nextArg) {
+          options.window = nextArg as TimeWindow;
+        }
+      }
+      break;
+
+    case '--clusters':
+    case '-c':
+      if (i + 1 < args.length) {
+        const nextArg = args[++i];
+        if (nextArg) {
+          options.clusters = parseInt(nextArg, 10);
+        }
+      }
+      break;
+
+    case '--dry-run':
+    case '-d':
+      options.dryRun = true;
+      break;
+
+    case '--post':
+    case '-p':
+      options.dryRun = false;
+      break;
+
+    case '--verbose':
+    case '-v':
+      options.verbose = true;
+      break;
+
+    case '--no-toc':
+      options.enableTOC = false;
+      break;
+
+    case '--toc':
+      options.enableTOC = true;
+      break;
+
+    case '--collapse':
+      options.collapseArticles = true;
+      break;
+
+    case '--no-collapse':
+      options.collapseArticles = false;
+      break;
+
+    case '--help':
+    case '-h':
+      options.help = true;
+      break;
+
+    default:
+      console.warn(`⚠️  Unknown argument: ${arg}`);
+    }
+  }
+
+  return options;
+}
+
+/**
+ * Validate CLI options
+ */
+function validateOptions(options: CLIOptions): boolean {
+  const validTimeWindows: TimeWindow[] = ['1h', '6h', '12h', '24h', '3d', '7d'];
+
+  if (!validTimeWindows.includes(options.window)) {
+    console.error(`❌ Invalid time window: ${options.window}`);
+    console.error(`   Valid options: ${validTimeWindows.join(', ')}`);
+    return false;
+  }
+
+  if (isNaN(options.clusters) || options.clusters < MIN_CLUSTER_COUNT || options.clusters > MAX_CLUSTER_COUNT) {
+    console.error(`❌ Invalid cluster count: ${options.clusters}`);
+    console.error(`   Must be between ${MIN_CLUSTER_COUNT} and ${MAX_CLUSTER_COUNT}`);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Print CLI help message
+ */
+function printHelp(): void {
+  console.log(`
+📰 Daily Digest Generator
+
+Usage:
+  npm run digest [options]
+
+Options:
+  -w, --window <window>     Time window for content (default: 24h)
+                            Options: 1h, 6h, 12h, 24h, 3d, 7d
+
+  -c, --clusters <count>    Number of clusters (default: 5)
+                            Range: 2-10
+
+  -d, --dry-run             Preview digest without posting to Notion (default)
+  -p, --post                Post digest to Notion
+
+  -v, --verbose             Enable verbose logging
+
+  --toc                     Enable table of contents (default)
+  --no-toc                  Disable table of contents
+
+  --collapse                Collapse articles in toggles
+  --no-collapse             Show articles expanded (default)
+
+  -h, --help                Show this help message
+
+Examples:
+  npm run digest                           # Default: 24h, 5 clusters, dry-run
+  npm run digest -- --window 7d            # Last 7 days
+  npm run digest -- --clusters 8           # 8 clusters
+  npm run digest -- --post                 # Post to Notion
+  npm run digest -- --window 3d --post     # 3 days, post to Notion
+  npm run digest -- --verbose --dry-run    # Verbose preview
+
+Environment Variables:
+  DIGEST_TIME_WINDOW         Default time window
+  DIGEST_CLUSTER_COUNT       Default cluster count
+  NOTION_API_KEY             Notion API key (required for posting)
+  NOTION_DATABASE_ID         Notion database ID (required for posting)
+  NOTION_DRY_RUN             Default dry-run mode (true/false)
+  NOTION_ENABLE_TOC          Enable table of contents (true/false)
+  NOTION_COLLAPSE_ARTICLES   Collapse articles (true/false)
+`);
+}
+
+/**
+ * Main CLI function to run digest generation
+ * Parses command-line arguments and executes the digest pipeline
+ */
+async function runDigestCLI(): Promise<void> {
+  const args = process.argv.slice(CLI_ARGS_START);
+  const options = parseArgs(args);
+
+  if (options.help) {
+    printHelp();
+    return;
+  }
+
+  if (!validateOptions(options)) {
+    console.log('\nRun with --help for usage information');
+    throw new Error('Invalid options');
+  }
+
+  // Log configuration
+  console.log('⚙️  Configuration:');
+  console.log(`   Time Window: ${options.window}`);
+  console.log(`   Clusters: ${options.clusters}`);
+  console.log(`   Mode: ${options.dryRun ? 'Dry-run (preview only)' : 'Post to Notion'}`);
+  console.log(`   Table of Contents: ${options.enableTOC ? 'Enabled' : 'Disabled'}`);
+  console.log(`   Collapse Articles: ${options.collapseArticles ? 'Yes' : 'No'}`);
+  if (options.verbose) {
+    console.log('   Verbose: Enabled');
+  }
+
+  // Generate digest
+  const digest = await generateDigest(options.window, options.clusters, {
+    includeKeyTakeaways: true,
+    maxArticlesPerCluster: 10,
+  });
+
+  if (options.verbose) {
+    console.log('\n📊 Digest Details:');
+    digest.clusters.forEach((cluster, idx) => {
+      console.log(`\n   Cluster ${idx + 1}: ${cluster.topicLabel}`);
+      console.log(`   Articles: ${cluster.representativeArticles.length}`);
+      console.log(`   Takeaways: ${cluster.keyTakeaways.length}`);
+    });
+  }
+
+  // Note: Notion posting will be added in Phase 4.2
+  if (!options.dryRun) {
+    console.log('\n⚠️  Notion posting not yet implemented (Phase 4.2)');
+    console.log('   Run with --dry-run to preview digest');
+  }
+
+  console.log('\n✅ Digest generation complete!');
+}
+
+// Run if called directly
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+
+if (isMainModule) {
+  runDigestCLI()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('\n❌ Digest generation failed:', error);
+      process.exit(1);
+    });
+}
