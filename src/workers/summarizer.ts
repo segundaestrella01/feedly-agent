@@ -19,7 +19,7 @@ import type {
 } from '../types/index.js';
 
 // Default clustering configuration
-const DEFAULT_CLUSTER_COUNT = 5;
+const DEFAULT_CLUSTER_COUNT = parseInt(process.env.CLUSTER_COUNT || '5', 10);
 const DEFAULT_MAX_ITERATIONS = 100;
 const DEFAULT_TOLERANCE = 1e-6;
 
