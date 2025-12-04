@@ -26,6 +26,9 @@ export * from './cluster.js';
 // Retrieval System Types
 export * from './retrieval.js';
 
+// Digest Types
+export * from './digest.js';
+
 // Database Types
 export * from './database.js';
 
