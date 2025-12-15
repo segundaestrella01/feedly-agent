@@ -142,7 +142,7 @@
       "name": "SitePoint",
       "url": "https://www.sitepoint.com/feed/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Smashing Magazine",
@@ -208,7 +208,7 @@
       "name": "Design Modo",
       "url": "https://designmodo.com/feed/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "DZone Web Dev",
@@ -232,7 +232,7 @@
       "name": "InfoQ - JavaScript",
       "url": "https://feed.infoq.com/javascript/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Kirupa",
@@ -250,7 +250,7 @@
       "name": "Love2Dev",
       "url": "https://love2dev.com/feed.rss",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Nielsen Norman Group",
@@ -286,13 +286,13 @@
       "name": "Twilio - JavaScript",
       "url": "https://www.twilio.com/blog/tag/javascript/feed",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Vue School",
       "url": "https://vueschool.io/articles/feed/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Web Performance Calendar",
@@ -400,7 +400,7 @@
       "name": "Jonathan Snook",
       "url": "https://snook.ca/jonathan/index.rdf",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Kent C. Dodds",
@@ -418,7 +418,7 @@
       "name": "Mark Otto",
       "url": "https://markdotto.com/atom.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Mathias Bynens",
@@ -532,7 +532,7 @@
       "name": "Alex Trost",
       "url": "https://frontend.horse/rss.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Andy Bell",
@@ -586,7 +586,7 @@
       "name": "Bradley Taunt",
       "url": "https://bt.ht/atom.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Bram Van Damme",
@@ -622,7 +622,7 @@
       "name": "Chen Hui Jing",
       "url": "https://www.chenhuijing.com/feed.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Josh W. Comeau",
@@ -697,7 +697,7 @@
       "active": true
     },
     {
-      "name": "Fredrik S\u00f6derstr\u00f6m",
+      "name": "Fredrik Söderström",
       "url": "https://writingjavascript.com/rss.xml",
       "category": "frontend",
       "active": true
@@ -712,7 +712,7 @@
       "name": "Gift Egwuenu",
       "url": "https://www.giftegwuenu.com/rss.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Harry Cresswell",
@@ -736,7 +736,7 @@
       "name": "Hidde de Vries",
       "url": "https://hiddedevries.nl/rss/full/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Holger Bartel",
@@ -823,7 +823,7 @@
       "active": true
     },
     {
-      "name": "Manuel Matuzovi\u0107",
+      "name": "Manuel Matuzović",
       "url": "https://www.matuzo.at/feed.xml",
       "category": "frontend",
       "active": true
@@ -832,7 +832,7 @@
       "name": "Marco Zehe",
       "url": "https://marcozehe.de/feed/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Marcus Hermann",
@@ -844,7 +844,7 @@
       "name": "Marius Schulz",
       "url": "https://feeds.feedburner.com/mariusschulz",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Mark Erikson",
@@ -868,7 +868,7 @@
       "name": "Max Stoiber",
       "url": "https://mxstbr.blog/feed.atom",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Michael Scharnagl",
@@ -880,7 +880,7 @@
       "name": "Michael Thiessen",
       "url": "https://michaelnthiessen.com/rss.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Michelle Barker",
@@ -928,7 +928,7 @@
       "name": "Preston Lamb",
       "url": "https://www.prestonlamb.com/blog-feed.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Raghavendra Satish Peri",
@@ -988,7 +988,7 @@
       "name": "Scott Vinkle",
       "url": "https://scottvinkle.me/blogs/work.atom",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Sean Wang",
@@ -1000,19 +1000,19 @@
       "name": "Serhii Bilyk",
       "url": "https://catchts.com/api/rss",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Sindre Sorhus",
       "url": "https://blog.sindresorhus.com/feed",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Sjoerd De Voorhoede",
       "url": "https://www.voorhoede.nl/blog-feed.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Stephanie Eckles",
@@ -1033,7 +1033,7 @@
       "active": true
     },
     {
-      "name": "St\u00e9phanie Walter",
+      "name": "Stéphanie Walter",
       "url": "https://stephaniewalter.design/feed/",
       "category": "frontend",
       "active": true
@@ -1042,13 +1042,13 @@
       "name": "Stuart Robson",
       "url": "https://alwaystwisted.com/rss.php",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Swizec Teller",
       "url": "https://swizec.com/blog/feed",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Tan Li Hau",
@@ -1060,13 +1060,13 @@
       "name": "Tania Rascia",
       "url": "https://www.taniarascia.com/rss.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Tim Smith",
       "url": "https://iamtimsmith.com/feed/",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Trys Mudford",
@@ -1090,7 +1090,7 @@
       "name": "Zell Liew",
       "url": "https://zellwk.com/feed.xml",
       "category": "frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Darryl Bayliss",
@@ -1198,13 +1198,13 @@
       "name": "Google Developers Updates",
       "url": "https://developer.chrome.com/feeds/blog.xml",
       "category": "browsers",
-      "active": true
+      "active": false
     },
     {
       "name": "Google Webmaster Central Blog",
       "url": "https://webmasters.googleblog.com/feeds/posts/default",
       "category": "browsers",
-      "active": true
+      "active": false
     },
     {
       "name": "Mozilla Accessibility",
@@ -1306,7 +1306,7 @@
       "name": "GSAP Blog",
       "url": "https://greensock.com/blog/?rss=1",
       "category": "frameworks",
-      "active": true
+      "active": false
     },
     {
       "name": "Inclusive Components",
@@ -1384,7 +1384,7 @@
       "name": "Bocoup",
       "url": "https://bocoup.com/feed",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "Calibre",
@@ -1432,7 +1432,7 @@
       "name": "Flywheel Blog",
       "url": "https://getflywheel.com/layout/feed/",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "The GitHub Blog",
@@ -1456,7 +1456,7 @@
       "name": "Instagram Engineering",
       "url": "https://instagram-engineering.com/feed",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "LogRocket",
@@ -1474,19 +1474,19 @@
       "name": "Netflix TechBlog",
       "url": "https://netflixtechblog.com/feed",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "ShimmerCat",
       "url": "https://www.shimmercat.com/feed.xml",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "Shopify Engineering",
       "url": "https://shopify.engineering/blog.atom",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "Speed Matters Blog",
@@ -1504,13 +1504,13 @@
       "name": "Twitter Engineering",
       "url": "https://blog.twitter.com/engineering/en_us/blog.rss",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "Volument Blog",
       "url": "https://volument.com/rss.xml",
       "category": "company",
-      "active": true
+      "active": false
     },
     {
       "name": "Codrops Collective",
@@ -1534,7 +1534,7 @@
       "name": "HeyDesigner",
       "url": "https://heydesigner.com/feed/",
       "category": "news",
-      "active": true
+      "active": false
     },
     {
       "name": "Unicorn Club",
@@ -1546,13 +1546,13 @@
       "name": "Web Development Reading List (WDRL)",
       "url": "https://wdrl.info/feed",
       "category": "news",
-      "active": true
+      "active": false
     },
     {
       "name": "Web Platform News",
       "url": "https://webplatform.news/feed.xml",
       "category": "news",
-      "active": true
+      "active": false
     },
     {
       "name": "/r/css",
@@ -1612,7 +1612,7 @@
       "name": "Kilian Valkhof",
       "url": "https://feeds.feedburner.com/Kilianvalkhof",
       "category": "feedspot-frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Honeybadger Developer Blog",
@@ -1684,13 +1684,13 @@
       "name": "Codemotion Magazine - Frontend",
       "url": "https://codemotion.com/magazine/frontend/feed",
       "category": "feedspot-frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Free Frontend",
       "url": "https://freefrontend.com/index.xml",
       "category": "feedspot-frontend",
-      "active": true
+      "active": false
     },
     {
       "name": "Nikita Hlopov's Frontend Dev Blog",
