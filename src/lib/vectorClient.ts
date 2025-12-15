@@ -6,6 +6,8 @@ import type {
   QueryResult,
   CollectionInfo,
   ChunkWithEmbeddingData,
+  ArticleWithEmbedding,
+  ArticleMetadata,
 } from '../types/index.js';
 
 // Vector database client (Chroma)
@@ -139,6 +141,86 @@ export class VectorClient {
       console.error('❌ Failed to upsert chunks:', error);
       throw error;
     }
+  }
+
+  /**
+   * Generate embeddings for texts without upserting to the database
+   * @param texts Array of texts to embed
+   * @returns Map of text index to embedding vector
+   */
+  async generateEmbeddings(texts: string[]): Promise<Map<number, number[]>> {
+    const embeddingResult = await this.llmClient.embed(texts);
+    const embeddingMap = new Map<number, number[]>();
+
+    embeddingResult.embeddings.forEach((embedding, index) => {
+      embeddingMap.set(index, embedding);
+    });
+
+    console.log(`✅ Generated ${embeddingMap.size} embeddings using ${embeddingResult.totalTokens} tokens`);
+    return embeddingMap;
+  }
+
+  /**
+   * Upsert articles with aggregated embeddings to the vector database
+   * @param articles Array of articles with aggregated embeddings
+   */
+  async upsertArticles(articles: ArticleWithEmbedding[]): Promise<void> {
+    await this.ensureInitialized();
+
+    if (articles.length === 0) {
+      console.log('⚠️ No articles to upsert');
+      return;
+    }
+
+    console.log(`📤 Upserting ${articles.length} articles to vector database...`);
+
+    try {
+      // Prepare data for Chroma
+      const ids = articles.map(article => article.id);
+      const embeddings = articles.map(article => article.embedding!);
+      const metadatas = articles.map(article => this.serializeArticleMetadata(article.metadata));
+      const documents = articles.map(article => article.content);
+
+      // Upsert to collection
+      await this.collection!.upsert({
+        ids,
+        embeddings,
+        metadatas,
+        documents,
+      });
+
+      console.log(`✅ Successfully upserted ${articles.length} articles to collection '${this.collectionName}'`);
+
+    } catch (error) {
+      console.error('❌ Failed to upsert articles:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Serialize ArticleMetadata for ChromaDB (convert arrays to strings)
+   * @param metadata Article metadata to serialize
+   * @returns Serialized metadata object
+   */
+  private serializeArticleMetadata(metadata: ArticleMetadata): Record<string, string | number | boolean> {
+    return {
+      source: metadata.source,
+      source_url: metadata.source_url,
+      title: metadata.title,
+      published_date: metadata.published_date,
+      chunk_count: metadata.chunk_count,
+      total_word_count: metadata.total_word_count,
+      total_char_count: metadata.total_char_count,
+      categories: metadata.categories?.join(',') || '',
+      tags: metadata.tags?.join(',') || '',
+      content_type: metadata.content_type,
+      processed_date: metadata.processed_date,
+      embedded_date: metadata.embedded_date,
+      article_id: metadata.article_id,
+      domain: metadata.domain || '',
+      language: metadata.language || '',
+      sentiment: metadata.sentiment || '',
+    };
   }
 
   /**
