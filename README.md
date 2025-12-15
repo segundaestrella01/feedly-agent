@@ -692,6 +692,17 @@ The embedding and vector systems have been tested with:
 
 ## 📋 Next Steps
 
+1. **Dynamic Cluster Count**: The current fixed k=5 clusters may not match the natural topic groupings in the content. Consider:
+   - Implementing automatic cluster count selection using elbow method or silhouette analysis
+   - Allowing adaptive k based on content volume (e.g., k = sqrt(n/2) or similar heuristic)
+   - Testing with higher cluster counts (8-15) for better topic separation
+
+2. **Improve Topic Label Generation**: The current `generateTopicLabel` function only uses article titles and sometimes produces lists of titles instead of synthesizing a meaningful category name. Improvements needed:
+   - Include article content snippets in the prompt, not just titles
+   - Add stronger instructions to synthesize a single cohesive theme (e.g., "CSS Layout Techniques" not a list of titles)
+   - Sample a subset of articles (10-15) instead of passing 100+ titles that overwhelm the LLM
+   - Consider a two-step approach: first identify sub-themes, then synthesize into one label
+
 ### Stage 5: Preference Memory
 
 - Implement user preference tracking
