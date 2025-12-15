@@ -75,16 +75,17 @@
 
 ---
 
-## Phase 4: Simplify Retriever
+## Phase 4: Simplify Retriever ✅
 
 ### 4.1 Remove Chunk-Level Logic
-- [ ] Simplify `removeDuplicates()` - may no longer be needed
-- [ ] Update `applyDiversityFilter()` - now operates on articles
-- [ ] Remove `chunk_index` references from deduplication key
+- [x] Simplified `removeDuplicates()` - now uses `article_id` (if available) or `source_url` as deduplication key
+- [x] Updated `applyDiversityFilter()` documentation - now operates on articles
+- [x] Removed `chunk_index` references from deduplication key
 
 ### 4.2 Update Result Handling
-- [ ] Update `QueryResult` usage to reflect article-level data
-- [ ] Simplify hybrid scoring (no chunk-level adjustments needed)
+- [x] Updated all documentation strings to reflect article-level data
+- [x] Updated all console logs from "chunks" to "articles"
+- [x] Hybrid scoring still works - uses `word_count` which maps to `total_word_count` in new format
 
 ### 4.3 Test Retrieval
 - [ ] Run retrieval queries
