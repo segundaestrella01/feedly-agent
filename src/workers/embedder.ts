@@ -3,12 +3,20 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { VectorClient } from '../lib/vectorClient.js';
 import { DatabaseClient } from '../lib/db.js';
-import type { 
-  ChunkWithEmbedding, 
-  ChunkMetadata,
+import {
+  groupChunksByArticle,
+  generateArticleId,
+  aggregateEmbeddings,
+  combineChunkContent,
+  calculateTotalWordCount,
+  calculateTotalCharCount,
+} from '../lib/embeddingAggregator.js';
+import type {
   ChunkFile,
   RawChunk,
   ProcessingStats,
+  ArticleWithEmbedding,
+  ArticleMetadata,
 } from '../types/index.js';
 
 // Constants
@@ -20,6 +28,8 @@ const BATCH_DELAY_DIVISOR = 2;
 const SEPARATOR_LENGTH = 60;
 const MILLISECONDS_IN_SECOND = 1000;
 const DECIMAL_PLACES = 2;
+// Maximum characters for combined article content
+const MAX_ARTICLE_CONTENT_CHARS = 4000;
 
 /**
  * Embedder Worker: Generates embeddings and upserts to vector database
@@ -148,20 +158,23 @@ export class EmbedderWorker {
   }
 
   /**
-   * Process a single chunk file
-   * Loads chunks, generates embeddings, and upserts to vector database
+   * Process a single chunk file with article-level embedding aggregation
+   * Loads chunks, generates embeddings for all chunks, aggregates by article,
+   * and upserts article-level embeddings to vector database
    * @param filePath - Absolute path to the chunk JSON file
    * @throws Error if file processing fails
    */
   private async processChunkFile(filePath: string): Promise<void> {
     const fileName = path.basename(filePath);
-    
+
     try {
       // Load chunk file
       const content = await fs.readFile(filePath, 'utf-8');
       const chunkFile: ChunkFile = JSON.parse(content);
 
-      console.log(`📄 Loaded ${chunkFile.totalChunks} chunks from ${chunkFile.totalItems} items`);
+      // Count unique articles
+      const uniqueArticles = new Set(chunkFile.chunks.map(c => c.sourceItem.link));
+      console.log(`📄 Loaded ${chunkFile.totalChunks} chunks from ${uniqueArticles.size} articles`);
       this.stats.totalChunks += chunkFile.totalChunks;
 
       // Initialize status in database
@@ -177,49 +190,88 @@ export class EmbedderWorker {
       const allChunkIds = chunkFile.chunks.map(c => c.id);
       const alreadyEmbedded = this.dbClient.getEmbeddedChunks(allChunkIds);
       const chunksToProcess = chunkFile.chunks.filter(c => !alreadyEmbedded.includes(c.id));
-      
+
       if (chunksToProcess.length === 0) {
         console.log('   ✅ All chunks already embedded, marking as completed');
         await this.dbClient.updateEmbeddingProgress(fileName, chunkFile.totalChunks, 'completed');
         return;
       }
-      
+
       if (alreadyEmbedded.length > 0) {
         console.log(`   📊 Found ${alreadyEmbedded.length} already embedded, processing ${chunksToProcess.length} remaining`);
       }
 
-      // Convert raw chunks to vector format
-      const vectorChunks = this.convertChunksToVectorFormat(chunksToProcess);
+      // Step 1: Generate embeddings for all chunks in batches
+      console.log(`\n⚡ Step 1: Generating embeddings for ${chunksToProcess.length} chunks...`);
+      const chunkEmbeddings = new Map<string, number[]>();
+      const chunkBatches = this.createBatches(chunksToProcess, BATCH_SIZE);
 
-      // Process chunks in batches
-      const batches = this.createBatches(vectorChunks, BATCH_SIZE);
-      
-      console.log(`⚡ Processing in ${batches.length} batches of up to ${BATCH_SIZE} chunks each`);
-
-      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-        const batch = batches[batchIndex];
+      for (let batchIndex = 0; batchIndex < chunkBatches.length; batchIndex++) {
+        const batch = chunkBatches[batchIndex];
         if (!batch) {continue;}
-        
+
         try {
-          console.log(`\n   📦 Batch ${batchIndex + 1}/${batches.length}: ${batch.length} chunks`);
-          
-          // Upsert batch (this will automatically generate embeddings)
-          await this.vectorClient.upsert(batch);
-          
+          console.log(`   📦 Embedding batch ${batchIndex + 1}/${chunkBatches.length}: ${batch.length} chunks`);
+
+          const texts = batch.map(chunk => chunk.content);
+          const embeddings = await this.vectorClient.generateEmbeddings(texts);
+
+          // Map embeddings back to chunk IDs
+          batch.forEach((chunk, index) => {
+            const embedding = embeddings.get(index);
+            if (embedding) {
+              chunkEmbeddings.set(chunk.id, embedding);
+            }
+          });
+
           this.stats.processedChunks += batch.length;
-          this.stats.successfulUpserts += batch.length;
-          
-          console.log(`   ✅ Batch ${batchIndex + 1} completed successfully`);
 
           // Add delay between batches
-          if (batchIndex < batches.length - 1) {
+          if (batchIndex < chunkBatches.length - 1) {
             await this.sleep(DELAY_MS / BATCH_DELAY_DIVISOR);
           }
 
         } catch (error) {
-          console.error(`   ❌ Batch ${batchIndex + 1} failed:`, error);
+          console.error(`   ❌ Embedding batch ${batchIndex + 1} failed:`, error);
           this.stats.errors++;
-          this.stats.skippedChunks += batch?.length || 0;
+          this.stats.skippedChunks += batch.length;
+        }
+      }
+
+      // Step 2: Aggregate embeddings into articles
+      console.log('\n⚡ Step 2: Aggregating embeddings into articles...');
+      const articles = this.convertChunksToArticles(chunksToProcess, chunkEmbeddings);
+
+      if (articles.length === 0) {
+        console.log('   ⚠️ No articles to upsert after aggregation');
+        await this.dbClient.updateEmbeddingProgress(fileName, chunkFile.totalChunks, 'completed');
+        return;
+      }
+
+      // Step 3: Upsert articles to vector database
+      console.log(`\n⚡ Step 3: Upserting ${articles.length} articles to vector database...`);
+      const articleBatches = this.createBatches(articles, BATCH_SIZE);
+
+      for (let batchIndex = 0; batchIndex < articleBatches.length; batchIndex++) {
+        const batch = articleBatches[batchIndex];
+        if (!batch) {continue;}
+
+        try {
+          console.log(`   📦 Article batch ${batchIndex + 1}/${articleBatches.length}: ${batch.length} articles`);
+
+          await this.vectorClient.upsertArticles(batch);
+          this.stats.successfulUpserts += batch.length;
+
+          console.log(`   ✅ Article batch ${batchIndex + 1} completed successfully`);
+
+          // Add delay between batches
+          if (batchIndex < articleBatches.length - 1) {
+            await this.sleep(DELAY_MS / BATCH_DELAY_DIVISOR);
+          }
+
+        } catch (error) {
+          console.error(`   ❌ Article batch ${batchIndex + 1} failed:`, error);
+          this.stats.errors++;
         }
       }
 
@@ -229,7 +281,7 @@ export class EmbedderWorker {
 
     } catch (error) {
       console.error(`❌ Failed to process chunk file ${filePath}:`, error);
-      
+
       // Mark file as failed
       await this.dbClient.updateEmbeddingProgress(fileName, 0, 'failed');
       throw error;
@@ -237,44 +289,76 @@ export class EmbedderWorker {
   }
 
   /**
-   * Convert raw chunks to vector database format
-   * Transforms chunk data into the format expected by the vector client
+   * Convert raw chunks to article-level format with aggregated embeddings
+   * Groups chunks by article, embeds each chunk, then aggregates embeddings
    * @param rawChunks - Array of raw chunks from chunk files
-   * @returns Array of chunks formatted for vector database upsert
+   * @param chunkEmbeddings - Map of chunk ID to embedding vector
+   * @returns Array of articles with aggregated embeddings
    */
-  private convertChunksToVectorFormat(rawChunks: RawChunk[]): ChunkWithEmbedding[] {
-    return rawChunks.map(chunk => {
-      const metadata: ChunkMetadata = {
-        // Source information
-        source: chunk.sourceItem.source,
-        source_url: chunk.sourceItem.link,
-        title: chunk.sourceItem.title,
-        published_date: chunk.sourceItem.pubDate,
-        
-        // Chunk information
-        chunk_index: chunk.chunkIndex,
-        total_chunks: rawChunks.filter(c => c.sourceItem.id === chunk.sourceItem.id).length,
-        word_count: chunk.wordCount,
-        char_count: chunk.charCount,
-        
-        // Content classification
-        categories: chunk.sourceItem.categories || [],
-        tags: chunk.sourceItem.tags || [],
+  private convertChunksToArticles(
+    rawChunks: RawChunk[],
+    chunkEmbeddings: Map<string, number[]>,
+  ): ArticleWithEmbedding[] {
+    // Group chunks by article URL
+    const articleGroups = groupChunksByArticle(rawChunks);
+    const articles: ArticleWithEmbedding[] = [];
+
+    for (const [articleUrl, chunks] of articleGroups) {
+      // Get the first chunk to extract article-level metadata
+      const firstChunk = chunks[0];
+      if (!firstChunk) {continue;}
+
+      // Collect embeddings for all chunks of this article
+      const embeddings: number[][] = [];
+      for (const chunk of chunks) {
+        const embedding = chunkEmbeddings.get(chunk.id);
+        if (embedding) {
+          embeddings.push(embedding);
+        }
+      }
+
+      // Skip if no embeddings available
+      if (embeddings.length === 0) {
+        console.warn(`⚠️ No embeddings found for article: ${firstChunk.sourceItem.title}`);
+        continue;
+      }
+
+      // Aggregate embeddings
+      const aggregatedEmbedding = aggregateEmbeddings(embeddings);
+
+      // Combine content from all chunks
+      const combinedContent = combineChunkContent(chunks, MAX_ARTICLE_CONTENT_CHARS);
+
+      // Generate article ID
+      const articleId = generateArticleId(articleUrl);
+
+      // Build article metadata
+      const metadata: ArticleMetadata = {
+        source: firstChunk.sourceItem.source,
+        source_url: articleUrl,
+        title: firstChunk.sourceItem.title,
+        published_date: firstChunk.sourceItem.pubDate,
+        chunk_count: chunks.length,
+        total_word_count: calculateTotalWordCount(chunks),
+        total_char_count: calculateTotalCharCount(chunks),
+        categories: firstChunk.sourceItem.categories || [],
+        tags: firstChunk.sourceItem.tags || [],
         content_type: 'article',
-        
-        // Processing metadata
-        processed_date: chunk.sourceItem.pubDate,
-        embedded_date: '', // Will be set during upsert
-        chunk_id: chunk.id,
+        processed_date: firstChunk.sourceItem.pubDate,
+        embedded_date: new Date().toISOString(),
+        article_id: articleId,
       };
 
-      return {
-        id: chunk.id,
-        content: chunk.content,
+      articles.push({
+        id: articleId,
+        content: combinedContent,
+        embedding: aggregatedEmbedding,
         metadata,
-        // embedding will be generated automatically during upsert
-      };
-    });
+      });
+    }
+
+    console.log(`📊 Aggregated ${rawChunks.length} chunks into ${articles.length} articles`);
+    return articles;
   }
 
   /**
