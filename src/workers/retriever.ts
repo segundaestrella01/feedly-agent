@@ -9,28 +9,31 @@ import type {
 } from '../types/index.js';
 
 /**
- * Retriever Worker: Advanced chunk retrieval system
- * 
+ * Retriever Worker: Advanced article retrieval system
+ *
  * Implements multiple query strategies for content retrieval:
  * - Time-based filtering
  * - Semantic similarity search
  * - Source-based filtering
  * - Hybrid scoring (recency + relevance)
+ *
+ * NOTE: This module now operates on article-level embeddings.
+ * Each result represents a complete article, not individual chunks.
  */
 
 /**
- * Retrieve chunks from the last N hours/days with optional filtering
+ * Retrieve articles from the last N hours/days with optional filtering
  * @param timeWindow Time window to retrieve from
- * @param limit Maximum number of chunks to return
+ * @param limit Maximum number of articles to return
  * @param additionalFilters Optional metadata filters
  * @returns Array of query results sorted by recency
  */
 export async function retrieveRecentChunks(
-  timeWindow: TimeWindow = '24h', 
+  timeWindow: TimeWindow = '24h',
   limit = 50,
   additionalFilters?: MetadataFilters,
 ): Promise<QueryResult[]> {
-  console.log(`🔍 Retrieving recent chunks from last ${timeWindow}...`);
+  console.log(`🔍 Retrieving recent articles from last ${timeWindow}...`);
   
   const vectorClient = new VectorClient();
   await vectorClient.initialize();
@@ -58,11 +61,11 @@ export async function retrieveRecentChunks(
       chromaFilters,
     );
 
-    console.log(`✅ Retrieved ${results.length} recent chunks from ${timeWindow}`);
+    console.log(`✅ Retrieved ${results.length} recent articles from ${timeWindow}`);
     return results.slice(0, limit);
 
   } catch (error) {
-    console.error('❌ Failed to retrieve recent chunks:', error);
+    console.error('❌ Failed to retrieve recent articles:', error);
     return [];
   }
 }
@@ -71,7 +74,7 @@ export async function retrieveRecentChunks(
  * Query vector database using semantic similarity search
  * @param query Natural language query
  * @param options Query configuration options
- * @returns Array of semantically similar chunks
+ * @returns Array of semantically similar articles
  */
 export async function retrieveByQuery(
   query: string, 
@@ -122,7 +125,7 @@ export async function retrieveByQuery(
       filteredResults = filteredResults.slice(0, options.limit);
     }
 
-    console.log(`✅ Found ${filteredResults.length} relevant chunks for query: "${query}"`);
+    console.log(`✅ Found ${filteredResults.length} relevant articles for query: "${query}"`);
     return filteredResults;
 
   } catch (error) {
@@ -132,29 +135,29 @@ export async function retrieveByQuery(
 }
 
 /**
- * Retrieve chunks related to specific topics
+ * Retrieve articles related to specific topics
  * @param topics Array of topic keywords
- * @param limit Maximum number of chunks per topic
- * @returns Array of topic-related chunks
+ * @param limit Maximum number of articles per topic
+ * @returns Array of topic-related articles
  */
 export async function retrieveByTopics(
-  topics: string[], 
+  topics: string[],
   limit = 20,
 ): Promise<QueryResult[]> {
-  console.log('🔍 Retrieving chunks for topics:', topics);
+  console.log('🔍 Retrieving articles for topics:', topics);
   
   const allResults: QueryResult[] = [];
   
   // Query for each topic separately
   for (const topic of topics) {
     try {
-      const topicResults = await retrieveByQuery(topic, { 
+      const topicResults = await retrieveByQuery(topic, {
         limit: Math.ceil(limit / topics.length),
         diversityFilter: true,
       });
       allResults.push(...topicResults);
     } catch (error) {
-      console.warn(`⚠️ Failed to retrieve chunks for topic "${topic}":`, error);
+      console.warn(`⚠️ Failed to retrieve articles for topic "${topic}":`, error);
     }
   }
 
@@ -162,7 +165,7 @@ export async function retrieveByTopics(
   const uniqueResults = removeDuplicates(allResults);
   const finalResults = applyDiversityFilter(uniqueResults, limit);
 
-  console.log(`✅ Retrieved ${finalResults.length} chunks across ${topics.length} topics`);
+  console.log(`✅ Retrieved ${finalResults.length} articles across ${topics.length} topics`);
   return finalResults;
 }
 
@@ -240,16 +243,16 @@ export async function combineAndRankResults(
  * Main retrieval function with comprehensive options
  * Combines query-based, topic-based, and time-based retrieval strategies
  * @param options - Configuration including query, topics, time window, and scoring options
- * @returns Array of relevant chunks ranked by hybrid scoring
+ * @returns Array of relevant articles ranked by hybrid scoring
  */
 export async function retrieveRelevantChunks(
-  options: RetrievalOptions & { 
+  options: RetrievalOptions & {
     query?: string,
     topics?: string[],
-    hybridScoring?: HybridScoringOptions 
+    hybridScoring?: HybridScoringOptions
   } = { limit: 50, timeWindow: '24h' },
 ): Promise<QueryResult[]> {
-  console.log('🚀 Starting comprehensive chunk retrieval...');
+  console.log('🚀 Starting comprehensive article retrieval...');
 
   try {
     let results: QueryResult[] = [];
@@ -282,11 +285,11 @@ export async function retrieveRelevantChunks(
     // Apply final limit
     results = results.slice(0, options.limit);
 
-    console.log(`✅ Retrieved ${results.length} total relevant chunks`);
+    console.log(`✅ Retrieved ${results.length} total relevant articles`);
     return results;
 
   } catch (error) {
-    console.error('❌ Failed to retrieve relevant chunks:', error);
+    console.error('❌ Failed to retrieve relevant articles:', error);
     return [];
   }
 }
@@ -341,14 +344,18 @@ function convertFiltersToChroma(filters: MetadataFilters): Record<string, string
 }
 
 /**
- * Remove duplicate chunks based on source URL and chunk index
+ * Remove duplicate articles based on source URL
+ * With article-level embeddings, each article has a single entry,
+ * so we only need to deduplicate by source_url (or article_id if available)
  * @param results - Array of query results that may contain duplicates
  * @returns Deduplicated array of query results
  */
 function removeDuplicates(results: QueryResult[]): QueryResult[] {
   const seen = new Set<string>();
   return results.filter(result => {
-    const key = `${result.metadata.source_url}-${result.metadata.chunk_index}`;
+    // Use article_id if available (new format), fallback to source_url (legacy)
+    const metadata = result.metadata as unknown as Record<string, unknown>;
+    const key = (metadata.article_id as string | undefined) || result.metadata.source_url;
     if (seen.has(key)) {
       return false;
     }
@@ -358,7 +365,7 @@ function removeDuplicates(results: QueryResult[]): QueryResult[] {
 }
 
 /**
- * Apply diversity filtering to avoid too many chunks from same source
+ * Apply diversity filtering to avoid too many articles from same source
  * Distributes results evenly across sources while respecting the limit
  * @param results - Array of query results to filter
  * @param limit - Maximum number of results to return
@@ -429,7 +436,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       qualityWeight: 0.6,
     },
   }).then(results => {
-    console.log(`\n📊 Retrieved ${results.length} chunks:`);
+    console.log(`\n📊 Retrieved ${results.length} articles:`);
     results.forEach((result, index) => {
       console.log(`\n${index + 1}. [${result.score.toFixed(3)}] ${result.metadata.title}`);
       console.log(`   Source: ${result.metadata.source}`);
