@@ -43,6 +43,8 @@
     "embed:status": "tsx src/scripts/embeddingStatus.ts",
     "vector:query": "tsx src/scripts/queryVector.ts",
     "vector:reset": "tsx src/scripts/resetVector.ts",
+    "vector:migrate": "tsx src/scripts/migrateToArticleEmbeddings.ts",
+    "vector:validate": "tsx src/scripts/validateArticleEmbeddings.ts",
     "test:metadata": "tsx src/scripts/testMetadataSchema.ts",
     "test:acceptance": "tsx src/scripts/testAcceptanceCriteria.ts",
     "lint": "eslint src/**/*.ts",
