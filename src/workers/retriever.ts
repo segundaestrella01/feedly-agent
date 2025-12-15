@@ -388,7 +388,7 @@ function applyDiversityFilter(results: QueryResult[], limit: number): QueryResul
   const diverseResults: QueryResult[] = [];
 
   // Take top items from each source
-  Array.from(sourceGroups.entries()).forEach(([source, sourceResults]) => {
+  Array.from(sourceGroups.entries()).forEach(([_source, sourceResults]) => {
     const topFromSource = sourceResults
       .sort((a, b) => b.score - a.score)
       .slice(0, maxPerSource);
@@ -413,21 +413,15 @@ function applyDiversityFilter(results: QueryResult[], limit: number): QueryResul
 }
 
 // CLI execution
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
-  const query = args[0] || undefined;
-  const limit = parseInt(args[1]) || 20;
+  const queryArg = args[0];
+  const limit = parseInt(args[1] || '20', 10);
   const timeWindow = (args[2] as TimeWindow) || '24h';
 
-  retrieveRelevantChunks({ 
-    query, 
-    limit, 
+  // Build options object, only include query if provided
+  const options: Parameters<typeof retrieveRelevantChunks>[0] = {
+    limit,
     timeWindow,
     diversityFilter: true,
     hybridScoring: {
@@ -435,7 +429,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       diversityBonus: 0.1,
       qualityWeight: 0.6,
     },
-  }).then(results => {
+  };
+
+  if (queryArg) {
+    options.query = queryArg;
+  }
+
+  retrieveRelevantChunks(options).then(results => {
     console.log(`\n📊 Retrieved ${results.length} articles:`);
     results.forEach((result, index) => {
       console.log(`\n${index + 1}. [${result.score.toFixed(3)}] ${result.metadata.title}`);
