@@ -2,7 +2,12 @@
  * Summarizer Worker: Clusters content using k-means on embeddings
  *
  * This module provides clustering functionality for organizing
- * semantically similar content chunks into groups.
+ * semantically similar articles into groups.
+ *
+ * NOTE: This module now operates on article-level embeddings.
+ * Each item represents a complete article, not individual chunks.
+ * The `ChunkWithEmbeddingData` type is used for backward compatibility
+ * but each item is a complete article with an aggregated embedding.
  */
 
 import 'dotenv/config';
@@ -58,30 +63,30 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 /**
- * Find the representative chunk for a cluster (closest to centroid)
- * Selects the chunk with highest cosine similarity to the cluster centroid
- * @param chunks - Array of chunks with embeddings in the cluster
+ * Find the representative article for a cluster (closest to centroid)
+ * Selects the article with highest cosine similarity to the cluster centroid
+ * @param articles - Array of articles with embeddings in the cluster
  * @param centroid - Cluster centroid vector
- * @returns The most representative chunk (without embedding property)
+ * @returns The most representative article (without embedding property)
  */
 function findRepresentative(
-  chunks: ChunkWithEmbeddingData[],
+  articles: ChunkWithEmbeddingData[],
   centroid: number[],
 ): QueryResult {
-  let bestChunk = chunks[0]!;
+  let bestArticle = articles[0]!;
   let bestSimilarity = -Infinity;
 
-  for (const chunk of chunks) {
-    const similarity = cosineSimilarity(chunk.embedding, centroid);
+  for (const article of articles) {
+    const similarity = cosineSimilarity(article.embedding, centroid);
     if (similarity > bestSimilarity) {
       bestSimilarity = similarity;
-      bestChunk = chunk;
+      bestArticle = article;
     }
   }
 
   // Return without the embedding property
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { embedding, ...result } = bestChunk;
+  const { embedding, ...result } = bestArticle;
   return result;
 }
 
@@ -113,38 +118,38 @@ function getSilhouetteQuality(score: number): string {
  *
  * The Silhouette score measures how well-separated clusters are:
  * - Score ranges from -1 to 1
- * - Values near 1: chunk is well-matched to its cluster
- * - Values near 0: chunk is on the border between clusters
- * - Values near -1: chunk may be assigned to wrong cluster
+ * - Values near 1: article is well-matched to its cluster
+ * - Values near 0: article is on the border between clusters
+ * - Values near -1: article may be assigned to wrong cluster
  *
- * @param chunks - All chunks with embeddings
- * @param clusterAssignments - Cluster ID for each chunk
+ * @param articles - All articles with embeddings
+ * @param clusterAssignments - Cluster ID for each article
  * @param centroids - Centroid vectors for each cluster
- * @returns Average Silhouette score across all chunks
+ * @returns Average Silhouette score across all articles
  */
 function calculateSilhouetteScore(
-  chunks: ChunkWithEmbeddingData[],
+  articles: ChunkWithEmbeddingData[],
   clusterAssignments: number[],
   centroids: number[][],
 ): number {
-  if (chunks.length <= 1 || centroids.length <= 1) {
+  if (articles.length <= 1 || centroids.length <= 1) {
     return 0; // Silhouette score undefined for single cluster or single point
   }
 
   let totalScore = 0;
   let validPoints = 0;
 
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i]!;
+  for (let i = 0; i < articles.length; i++) {
+    const article = articles[i]!;
     const clusterIdx = clusterAssignments[i]!;
 
     // Calculate a(i): average distance to points in same cluster
     let intraClusterDist = 0;
     let intraClusterCount = 0;
 
-    for (let j = 0; j < chunks.length; j++) {
+    for (let j = 0; j < articles.length; j++) {
       if (i !== j && clusterAssignments[j] === clusterIdx) {
-        intraClusterDist += cosineDistance(chunk.embedding, chunks[j]!.embedding);
+        intraClusterDist += cosineDistance(article.embedding, articles[j]!.embedding);
         intraClusterCount++;
       }
     }
@@ -160,9 +165,9 @@ function calculateSilhouetteScore(
       let interClusterDist = 0;
       let interClusterCount = 0;
 
-      for (let j = 0; j < chunks.length; j++) {
+      for (let j = 0; j < articles.length; j++) {
         if (clusterAssignments[j] === otherCluster) {
-          interClusterDist += cosineDistance(chunk.embedding, chunks[j]!.embedding);
+          interClusterDist += cosineDistance(article.embedding, articles[j]!.embedding);
           interClusterCount++;
         }
       }
@@ -187,22 +192,24 @@ function calculateSilhouetteScore(
 }
 
 /**
- * Cluster chunks using k-means algorithm on embeddings
- * @param chunks Array of chunks with embeddings
+ * Cluster articles using k-means algorithm on embeddings
+ * Note: Function name kept as clusterChunks for backward compatibility,
+ * but it now operates on article-level embeddings.
+ * @param articles Array of articles with embeddings
  * @param options Clustering configuration options
  * @returns ClusteringResult with organized clusters
  */
 export function clusterChunks(
-  chunks: ChunkWithEmbeddingData[],
+  articles: ChunkWithEmbeddingData[],
   options: ClusteringOptions = {},
 ): ClusteringResult {
   const k = options.k ?? DEFAULT_CLUSTER_COUNT;
   const maxIterations = options.maxIterations ?? DEFAULT_MAX_ITERATIONS;
   const tolerance = options.tolerance ?? DEFAULT_TOLERANCE;
 
-  console.log(`🔬 Clustering ${chunks.length} chunks into ${k} clusters...`);
+  console.log(`🔬 Clustering ${articles.length} articles into ${k} clusters...`);
 
-  if (chunks.length === 0) {
+  if (articles.length === 0) {
     return {
       clusters: [],
       totalChunks: 0,
@@ -211,15 +218,15 @@ export function clusterChunks(
     };
   }
 
-  // Adjust k if we have fewer chunks than clusters
-  const effectiveK = Math.min(k, chunks.length);
+  // Adjust k if we have fewer articles than clusters
+  const effectiveK = Math.min(k, articles.length);
 
   if (effectiveK < k) {
-    console.log(`⚠️ Reduced cluster count to ${effectiveK} (fewer chunks than requested)`);
+    console.log(`⚠️ Reduced cluster count to ${effectiveK} (fewer articles than requested)`);
   }
 
   // Extract embeddings matrix for k-means
-  const embeddings = chunks.map(chunk => chunk.embedding);
+  const embeddings = articles.map(article => article.embedding);
 
   // Run k-means clustering
   const result = kmeans(embeddings, effectiveK, {
@@ -228,17 +235,17 @@ export function clusterChunks(
     initialization: 'kmeans++',
   });
 
-  // Group chunks by cluster assignment
+  // Group articles by cluster assignment
   const clusterGroups = new Map<number, ChunkWithEmbeddingData[]>();
 
   for (let i = 0; i < result.clusters.length; i++) {
     const clusterId = result.clusters[i];
-    const chunk = chunks[i];
-    if (clusterId !== undefined && chunk !== undefined) {
+    const article = articles[i];
+    if (clusterId !== undefined && article !== undefined) {
       if (!clusterGroups.has(clusterId)) {
         clusterGroups.set(clusterId, []);
       }
-      clusterGroups.get(clusterId)!.push(chunk);
+      clusterGroups.get(clusterId)!.push(article);
     }
   }
 
@@ -246,20 +253,21 @@ export function clusterChunks(
   const clusters: Cluster[] = [];
 
   for (let clusterId = 0; clusterId < effectiveK; clusterId++) {
-    const clusterChunks = clusterGroups.get(clusterId) || [];
+    const clusterArticles = clusterGroups.get(clusterId) || [];
     const centroid = result.centroids[clusterId];
 
-    if (clusterChunks.length > 0) {
+    if (clusterArticles.length > 0) {
       clusters.push({
         id: clusterId,
-        chunks: clusterChunks.map(c => {
+        // Note: Cluster.chunks property contains articles (kept for backward compatibility)
+        chunks: clusterArticles.map(c => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { embedding: _unused, ...rest } = c;
           return rest;
         }),
         centroid,
-        size: clusterChunks.length,
-        representativeChunk: findRepresentative(clusterChunks, centroid),
+        size: clusterArticles.length,
+        representativeChunk: findRepresentative(clusterArticles, centroid),
       });
     }
   }
@@ -269,45 +277,52 @@ export function clusterChunks(
 
   // Calculate Silhouette score for quality assessment
   let silhouetteScore: number | undefined;
-  if (clusters.length > 1 && chunks.length > 1) {
-    silhouetteScore = calculateSilhouetteScore(chunks, result.clusters, result.centroids);
+  if (clusters.length > 1 && articles.length > 1) {
+    silhouetteScore = calculateSilhouetteScore(articles, result.clusters, result.centroids);
     console.log(`📊 Silhouette score: ${silhouetteScore.toFixed(SILHOUETTE_DECIMAL_PLACES)} (quality: ${getSilhouetteQuality(silhouetteScore)})`);
   }
 
   // Log cluster statistics
   console.log(`✅ Created ${clusters.length} clusters:`);
   clusters.forEach((cluster, idx) => {
-    console.log(`   Cluster ${idx + 1}: ${cluster.size} chunks`);
+    console.log(`   Cluster ${idx + 1}: ${cluster.size} articles`);
   });
 
-  return {
+  // Build result object
+  const clusteringResult: ClusteringResult = {
     clusters,
-    totalChunks: chunks.length,
+    totalChunks: articles.length,  // Note: totalChunks field now represents article count
     clusterCount: clusters.length,
     timestamp: new Date().toISOString(),
-    silhouetteScore,
   };
+
+  // Only add silhouetteScore if it was calculated
+  if (silhouetteScore !== undefined) {
+    clusteringResult.silhouetteScore = silhouetteScore;
+  }
+
+  return clusteringResult;
 }
 
 /**
- * Retrieve all chunks with embeddings and cluster them (no time filter)
- * @param limit Maximum chunks to retrieve
+ * Retrieve all articles with embeddings and cluster them (no time filter)
+ * @param limit Maximum articles to retrieve
  * @param options Clustering options
  */
 export async function clusterAllContent(
   limit = 100,
   options: ClusteringOptions = {},
 ): Promise<ClusteringResult> {
-  console.log(`🚀 Clustering all content (up to ${limit} chunks)...`);
+  console.log(`🚀 Clustering all content (up to ${limit} articles)...`);
 
   const vectorClient = new VectorClient();
   await vectorClient.initialize();
 
-  // Get all chunks with embeddings
-  const chunksWithEmbeddings = await vectorClient.getAllWithEmbeddings(limit);
+  // Get all articles with embeddings
+  const articlesWithEmbeddings = await vectorClient.getAllWithEmbeddings(limit);
 
-  if (chunksWithEmbeddings.length === 0) {
-    console.log('⚠️ No chunks found to cluster');
+  if (articlesWithEmbeddings.length === 0) {
+    console.log('⚠️ No articles found to cluster');
     return {
       clusters: [],
       totalChunks: 0,
@@ -316,16 +331,16 @@ export async function clusterAllContent(
     };
   }
 
-  console.log(`📊 Found ${chunksWithEmbeddings.length} chunks to cluster`);
+  console.log(`📊 Found ${articlesWithEmbeddings.length} articles to cluster`);
 
-  // Cluster the chunks
-  return clusterChunks(chunksWithEmbeddings, options);
+  // Cluster the articles
+  return clusterChunks(articlesWithEmbeddings, options);
 }
 
 /**
- * Retrieve recent chunks with embeddings and cluster them
- * @param timeWindow Time window for recent chunks
- * @param limit Maximum chunks to retrieve
+ * Retrieve recent articles with embeddings and cluster them
+ * @param timeWindow Time window for recent articles
+ * @param limit Maximum articles to retrieve
  * @param options Clustering options
  */
 export async function clusterRecentContent(
@@ -338,11 +353,11 @@ export async function clusterRecentContent(
   const vectorClient = new VectorClient();
   await vectorClient.initialize();
 
-  // Get all chunks with embeddings
-  const chunksWithEmbeddings = await vectorClient.getAllWithEmbeddings(limit);
+  // Get all articles with embeddings
+  const articlesWithEmbeddings = await vectorClient.getAllWithEmbeddings(limit);
 
-  if (chunksWithEmbeddings.length === 0) {
-    console.log('⚠️ No chunks found to cluster');
+  if (articlesWithEmbeddings.length === 0) {
+    console.log('⚠️ No articles found to cluster');
     return {
       clusters: [],
       totalChunks: 0,
@@ -355,15 +370,15 @@ export async function clusterRecentContent(
   const timeWindowMs = parseTimeWindow(timeWindow);
   const cutoffDate = new Date(Date.now() - timeWindowMs);
 
-  const recentChunks = chunksWithEmbeddings.filter(chunk => {
-    const publishedDate = new Date(chunk.metadata.published_date);
+  const recentArticles = articlesWithEmbeddings.filter(article => {
+    const publishedDate = new Date(article.metadata.published_date);
     return publishedDate >= cutoffDate;
   });
 
-  console.log(`📊 Found ${recentChunks.length} chunks from last ${timeWindow}`);
+  console.log(`📊 Found ${recentArticles.length} articles from last ${timeWindow}`);
 
-  if (recentChunks.length === 0) {
-    console.log('⚠️ No recent chunks found to cluster');
+  if (recentArticles.length === 0) {
+    console.log('⚠️ No recent articles found to cluster');
     return {
       clusters: [],
       totalChunks: 0,
@@ -372,8 +387,8 @@ export async function clusterRecentContent(
     };
   }
 
-  // Cluster the chunks
-  return clusterChunks(recentChunks, options);
+  // Cluster the articles
+  return clusterChunks(recentArticles, options);
 }
 
 /**
@@ -395,11 +410,11 @@ function parseTimeWindow(timeWindow: TimeWindow): number {
 }
 
 /**
- * Main summarize function - clusters content for digest generation
+ * Main summarize function - clusters articles for digest generation
  * Entry point for the summarization pipeline
  * @param timeWindow - Time window for recent content (default: '24h')
  * @param clusterCount - Number of clusters to create (default: 5)
- * @returns ClusteringResult with organized content clusters
+ * @returns ClusteringResult with organized article clusters
  */
 export async function summarizeContent(
   timeWindow: TimeWindow = '24h',
@@ -410,7 +425,7 @@ export async function summarizeContent(
   const result = await clusterRecentContent(timeWindow, 200, { k: clusterCount });
 
   console.log('\n📊 Clustering Summary:');
-  console.log(`   Total chunks: ${result.totalChunks}`);
+  console.log(`   Total articles: ${result.totalChunks}`);
   console.log(`   Clusters: ${result.clusterCount}`);
   console.log(`   Timestamp: ${result.timestamp}`);
 
@@ -431,7 +446,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     let result: ClusteringResult;
 
     if (mode === 'all') {
-      // Cluster all content without time filter
+      // Cluster all articles without time filter
       result = await clusterAllContent(200, { k: clusterCount });
     } else {
       // Use time window
@@ -440,7 +455,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
     console.log('\n🎯 Cluster Representatives:');
     result.clusters.forEach((cluster, idx) => {
-      console.log(`\n--- Cluster ${idx + 1} (${cluster.size} chunks) ---`);
+      console.log(`\n--- Cluster ${idx + 1} (${cluster.size} articles) ---`);
       console.log(`Title: ${cluster.representativeChunk.metadata.title}`);
       console.log(`Source: ${cluster.representativeChunk.metadata.source}`);
       console.log(`Content: ${cluster.representativeChunk.content.slice(0, PREVIEW_LENGTH)}...`);
