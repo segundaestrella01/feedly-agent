@@ -1,9 +1,10 @@
-import { createRSSClientFromConfig } from '../lib/rssClient.js';
+import { createRSSClientFromConfig, markFeedsAsInactive } from '../lib/rssClient.js';
 import { getConfig, timeWindowToHours } from '../lib/config.js';
 
 /**
  * Fetcher worker: retrieves RSS items and saves to data/raw
  * Fetches items from configured RSS feeds within the specified time window
+ * Failed feeds are automatically marked as inactive in feeds.json
  * @returns Array of fetched RSS items, or undefined if no items found
  * @throws Error if RSS fetch fails
  */
@@ -19,6 +20,12 @@ export async function fetchRSSItems() {
     console.log(`📅 Fetching items from the last ${config.timeWindow} (${hoursBack} hours)`);
 
     const items = await client.getRecentItems(hoursBack);
+
+    // Mark failed feeds as inactive in feeds.json
+    const failedFeeds = client.getFailedFeeds();
+    if (failedFeeds.length > 0) {
+      await markFeedsAsInactive(failedFeeds);
+    }
 
     if (items.length === 0) {
       console.log('No new items found in the specified time range');

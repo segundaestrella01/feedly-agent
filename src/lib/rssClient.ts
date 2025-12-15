@@ -3,10 +3,18 @@ import fs from 'fs/promises';
 import path from 'path';
 import type { RSSItem, RSSFeed } from '../types/index.js';
 
+export interface FeedFetchResult {
+  feed: RSSFeed | null;
+  url: string;
+  success: boolean;
+  error?: string;
+}
+
 export class RSSClient {
   private parser: Parser;
   private feedUrls: string[];
   private dataDir: string;
+  private failedFeeds: string[] = [];
 
   constructor(feedUrls: string[] = [], dataDir = './data') {
     this.parser = new Parser({
@@ -17,6 +25,13 @@ export class RSSClient {
     });
     this.feedUrls = feedUrls;
     this.dataDir = dataDir;
+  }
+
+  /**
+   * Get list of feeds that failed during the last fetch
+   */
+  getFailedFeeds(): string[] {
+    return [...this.failedFeeds];
   }
 
   /**
@@ -73,20 +88,36 @@ export class RSSClient {
     }
 
     console.log(`Fetching ${this.feedUrls.length} RSS feeds...`);
-    
-    const feedPromises = this.feedUrls.map(async (feedUrl) => {
+
+    // Reset failed feeds list
+    this.failedFeeds = [];
+
+    const feedPromises = this.feedUrls.map(async (feedUrl): Promise<FeedFetchResult> => {
       try {
-        return await this.fetchFeed(feedUrl);
+        const feed = await this.fetchFeed(feedUrl);
+        return { feed, url: feedUrl, success: true };
       } catch (error) {
-        console.error(`Failed to fetch ${feedUrl}:`, error);
-        return null;
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to fetch ${feedUrl}:`, errorMessage);
+        return { feed: null, url: feedUrl, success: false, error: errorMessage };
       }
     });
 
-    const feeds = await Promise.all(feedPromises);
-    const validFeeds = feeds.filter((feed): feed is RSSFeed => feed !== null);
-    
+    const results = await Promise.all(feedPromises);
+
+    // Track failed feeds
+    this.failedFeeds = results
+      .filter(r => !r.success)
+      .map(r => r.url);
+
+    const validFeeds = results
+      .filter((r): r is FeedFetchResult & { feed: RSSFeed } => r.success && r.feed !== null)
+      .map(r => r.feed);
+
     console.log(`Successfully fetched ${validFeeds.length} out of ${this.feedUrls.length} feeds`);
+    if (this.failedFeeds.length > 0) {
+      console.log(`⚠️  ${this.failedFeeds.length} feeds failed and will be marked as inactive`);
+    }
     return validFeeds;
   }
 
@@ -179,12 +210,38 @@ export async function loadFeedsFromFile(filePath = './feeds.json'): Promise<stri
   }
 }
 
+// Mark feeds as inactive in feeds.json
+export async function markFeedsAsInactive(feedUrls: string[], filePath = './feeds.json'): Promise<void> {
+  if (feedUrls.length === 0) return;
+
+  try {
+    const data = await fs.readFile(filePath, 'utf-8');
+    const config = JSON.parse(data);
+
+    let deactivatedCount = 0;
+    for (const feed of config.feeds) {
+      if (feedUrls.includes(feed.url) && feed.active) {
+        feed.active = false;
+        deactivatedCount++;
+        console.log(`🚫 Marking feed as inactive: ${feed.name || feed.url}`);
+      }
+    }
+
+    if (deactivatedCount > 0) {
+      await fs.writeFile(filePath, JSON.stringify(config, null, 2));
+      console.log(`📝 Updated feeds.json: ${deactivatedCount} feeds marked as inactive`);
+    }
+  } catch (error) {
+    console.error(`Failed to update feeds.json:`, error);
+  }
+}
+
 // Create RSS client from feeds.json configuration
 export async function createRSSClientFromConfig(): Promise<RSSClient> {
   const dataDir = process.env.DATA_DIR || './data';
-  
+
   const client = new RSSClient([], dataDir);
-  
+
   // Load feeds from feeds.json
   try {
     const fileFeeds = await loadFeedsFromFile();
@@ -196,6 +253,6 @@ export async function createRSSClientFromConfig(): Promise<RSSClient> {
     console.error('Failed to load feeds from feeds.json:', error);
     throw new Error('Could not load feed configuration. Please ensure feeds.json exists with active feeds.');
   }
-  
+
   return client;
 }
