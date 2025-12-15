@@ -109,20 +109,22 @@
 
 ---
 
-## Phase 6: Update Digest Generation
+## Phase 6: Update Digest Generation ✅
 
 ### 6.1 Article References
-- [ ] Simplify `formatArticleReferences()` in `src/workers/digest.ts`
-- [ ] Remove deduplication logic (no longer needed)
-- [ ] Each cluster item IS an article
+- [x] Simplified `formatArticleReferences()` in `src/workers/digest.ts`
+- [x] Removed deduplication logic (no longer needed - each cluster item IS an article)
+- [x] Updated variable names from `chunk` to `article` throughout
 
 ### 6.2 Article Counting
-- [ ] Update `articleCount` calculation: `cluster.articles.length`
-- [ ] Update total article count in metadata
+- [x] `articleCount` already uses `cluster.size` which is correct
+- [x] Total article count in metadata calculated from summaries
 
 ### 6.3 Content for LLM
-- [ ] Use `combinedContent` from article for summarization
-- [ ] Update prompts if needed to reference "article" not "chunks"
+- [x] Updated `generateTopicLabel()` - now references articles
+- [x] Updated `extractKeyTakeaways()` - now references articles
+- [x] Updated `summarizeCluster()` - now references articles
+- [x] Updated all documentation to reference "articles" not "chunks"
 
 ### 6.4 Test Digest
 - [ ] Generate digest with new pipeline
