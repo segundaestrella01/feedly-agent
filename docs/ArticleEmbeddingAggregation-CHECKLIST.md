@@ -33,31 +33,38 @@
 
 ---
 
-## Phase 2: Modify Embedder Worker
+## Phase 2: Modify Embedder Worker ✅
 
 ### 2.1 Update Embedder Logic
-- [ ] Import aggregation functions in `src/workers/embedder.ts`
-- [ ] Modify `processChunkFile()` to group chunks by article before processing
-- [ ] Update `convertChunksToVectorFormat()` to produce article-level format
-- [ ] Compute aggregated embedding per article
-- [ ] Combine chunk content into single document text
+- [x] Import aggregation functions in `src/workers/embedder.ts`
+- [x] Modify `processChunkFile()` to use 3-step process: embed chunks → aggregate → upsert articles
+- [x] Created new `convertChunksToArticles()` method for article-level aggregation
+- [x] Removed legacy `convertChunksToVectorFormat()` (no longer needed)
+- [x] Compute aggregated embedding per article using weighted average
+- [x] Combine chunk content into single document text (max 4000 chars)
 
 ### 2.2 Update Metadata Handling
-- [ ] Update metadata to include `chunk_count` instead of `chunk_index`
-- [ ] Remove `total_chunks` (now implicit - it's 1)
-- [ ] Calculate `total_word_count` and `total_char_count` as sums
+- [x] Using `ArticleMetadata` with `chunk_count` instead of `chunk_index`
+- [x] Using `total_word_count` and `total_char_count` as sums
+- [x] Added `article_id` field (hash of source URL)
 
-### 2.3 Test Embedder Changes
+### 2.3 Update Vector Client
+- [x] Added `generateEmbeddings(texts)` method to get embeddings without upserting
+- [x] Added `upsertArticles(articles)` method for article-level upserts
+- [x] Added `serializeArticleMetadata()` helper for ChromaDB compatibility
+
+### 2.4 Test Embedder Changes
 - [ ] Run embedder on sample data
 - [ ] Verify single vector per article in ChromaDB
 - [ ] Verify metadata contains correct aggregated values
 
 ---
 
-## Phase 3: Update Vector Client
+## Phase 3: Update Vector Client ✅ (Already done in Phase 2)
 
 ### 3.1 Schema Updates
-- [ ] Update `ChunkMetadata` or create `ArticleMetadata` in vectorClient
+- [x] Created `ArticleMetadata` type in `src/types/vector.ts` (Phase 1)
+- [x] Added `upsertArticles()` method handling new metadata fields
 - [ ] Ensure upsert handles new metadata fields
 - [ ] Update query result parsing for new metadata format
 
