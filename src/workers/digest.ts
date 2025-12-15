@@ -1,6 +1,10 @@
 /**
  * Daily Digest Generator Worker
  * Generates and composes daily digest from clustered content
+ *
+ * NOTE: This module now operates on article-level embeddings.
+ * Each item in a cluster represents a complete article, not individual chunks.
+ * The `cluster.chunks` array contains articles (QueryResult with ArticleMetadata).
  */
 
 import { LLMClient } from '../lib/llmClient.js';
@@ -18,7 +22,7 @@ import type {
 } from '../types/index.js';
 
 // Constants
-const MAX_CHUNKS_TO_RETRIEVE = 1000; // Retrieve all chunks for proper date filtering
+const MAX_ARTICLES_TO_RETRIEVE = 1000; // Retrieve all articles for proper date filtering
 const ESTIMATED_TOKENS_PER_CLUSTER = 700;
 const GPT4O_MINI_INPUT_COST_PER_1M = 0.150;
 const GPT4O_MINI_OUTPUT_COST_PER_1M = 0.600;
@@ -33,8 +37,8 @@ const MAX_TAKEAWAYS = 5;
 const DEFAULT_MAX_ARTICLES = 10;
 
 /**
- * Generate a concise topic label for a cluster
- * @param cluster The cluster to generate a label for
+ * Generate a concise topic label for a cluster of articles
+ * @param cluster The cluster to generate a label for (contains articles)
  * @param llmClient LLM client instance
  * @returns Promise with the topic label (3-5 words)
  */
@@ -42,9 +46,9 @@ export async function generateTopicLabel(
   cluster: Cluster,
   llmClient: LLMClient,
 ): Promise<string> {
-  // Extract titles from cluster chunks
+  // Extract titles from cluster articles (cluster.chunks now contains articles)
   const titles = cluster.chunks
-    .map(chunk => chunk.metadata?.title)
+    .map(article => article.metadata?.title)
     .filter((title): title is string => !!title);
 
   if (titles.length === 0) {
@@ -81,8 +85,8 @@ Return only the topic label, nothing else. Make it specific and descriptive.`,
 }
 
 /**
- * Extract key takeaways from a cluster
- * @param cluster The cluster to extract takeaways from
+ * Extract key takeaways from a cluster of articles
+ * @param cluster The cluster to extract takeaways from (contains articles)
  * @param llmClient LLM client instance
  * @returns Promise with array of key takeaways (3-5 items)
  */
@@ -90,11 +94,11 @@ export async function extractKeyTakeaways(
   cluster: Cluster,
   llmClient: LLMClient,
 ): Promise<string[]> {
-  // Prepare article content
-  const articles = cluster.chunks.map(chunk => ({
-    title: chunk.metadata?.title || 'Untitled',
-    content: chunk.content,
-    source: chunk.metadata?.source || 'Unknown',
+  // Prepare article content (cluster.chunks now contains articles, not individual chunks)
+  const articles = cluster.chunks.map(article => ({
+    title: article.metadata?.title || 'Untitled',
+    content: article.content,
+    source: article.metadata?.source || 'Unknown',
   }));
 
   if (articles.length === 0) {
@@ -143,7 +147,9 @@ Return the takeaways as a numbered list, one per line.`,
 
 /**
  * Format article references from a cluster
- * @param cluster The cluster to format references for
+ * With article-level embeddings, each cluster item IS a complete article,
+ * so no deduplication is needed - each item maps 1:1 to an article reference.
+ * @param cluster The cluster to format references for (contains articles)
  * @param maxArticles Maximum number of articles to include (default: 10)
  * @returns Array of article references
  */
@@ -151,20 +157,23 @@ export function formatArticleReferences(
   cluster: Cluster,
   maxArticles = 10,
 ): ArticleReference[] {
+  // cluster.chunks now contains articles, not individual chunks
+  // Each article maps directly to one reference (no deduplication needed)
   return cluster.chunks
     .slice(0, maxArticles)
-    .map(chunk => ({
-      title: chunk.metadata?.title || 'Untitled',
-      source: chunk.metadata?.source || 'Unknown',
-      url: chunk.metadata?.source_url,
-      publishedAt: chunk.metadata?.published_date,
-      excerpt: chunk.content.substring(0, EXCERPT_LENGTH) + (chunk.content.length > EXCERPT_LENGTH ? '...' : ''),
+    .map(article => ({
+      title: article.metadata?.title || 'Untitled',
+      source: article.metadata?.source || 'Unknown',
+      url: article.metadata?.source_url,
+      publishedAt: article.metadata?.published_date,
+      excerpt: article.content.substring(0, EXCERPT_LENGTH) + (article.content.length > EXCERPT_LENGTH ? '...' : ''),
     }));
 }
 
 /**
  * Summarize a cluster with topic label, summary, and key takeaways
- * @param cluster The cluster to summarize
+ * With article-level embeddings, each cluster item is a complete article.
+ * @param cluster The cluster to summarize (contains articles)
  * @param topicLabel The topic label for the cluster
  * @param llmClient LLM client instance
  * @param options Optional configuration
@@ -180,11 +189,11 @@ export async function summarizeCluster(
     silhouetteScore?: number;
   },
 ): Promise<ClusterSummary> {
-  // Prepare article content
-  const articles = cluster.chunks.map(chunk => ({
-    title: chunk.metadata?.title || 'Untitled',
-    content: chunk.content,
-    source: chunk.metadata?.source || 'Unknown',
+  // Prepare article content (cluster.chunks now contains articles)
+  const articles = cluster.chunks.map(article => ({
+    title: article.metadata?.title || 'Untitled',
+    content: article.content,
+    source: article.metadata?.source || 'Unknown',
   }));
 
   // Create prompt for cluster summarization
@@ -218,15 +227,15 @@ Focus on the key developments, trends, and important information.`,
       ? await extractKeyTakeaways(cluster, llmClient)
       : [];
 
-    // Format article references
+    // Format article references (each cluster item is now an article)
     const representativeArticles = formatArticleReferences(
       cluster,
       options?.maxArticles || DEFAULT_MAX_ARTICLES,
     );
 
-    // Calculate average relevance score
+    // Calculate average relevance score (cluster.chunks now contains articles)
     const avgRelevanceScore = cluster.chunks.length > 0
-      ? cluster.chunks.reduce((sum, chunk) => sum + chunk.score, 0) / cluster.chunks.length
+      ? cluster.chunks.reduce((sum, article) => sum + article.score, 0) / cluster.chunks.length
       : 0;
 
     // Build metadata object
@@ -301,11 +310,11 @@ export async function generateDigest(
   const llmClient = new LLMClient();
 
   try {
-    // Step 1: Cluster recent content
-    console.log('\n📊 Step 1: Clustering recent content...');
+    // Step 1: Cluster recent articles
+    console.log('\n📊 Step 1: Clustering recent articles...');
     const clusteringResult = await clusterRecentContent(
       timeWindow,
-      MAX_CHUNKS_TO_RETRIEVE,
+      MAX_ARTICLES_TO_RETRIEVE,
       { k: clusterCount },
     );
 
@@ -313,7 +322,7 @@ export async function generateDigest(
       throw new Error('No content found to generate digest');
     }
 
-    console.log(`✅ Created ${clusteringResult.clusters.length} clusters from ${clusteringResult.totalChunks} chunks`);
+    console.log(`✅ Created ${clusteringResult.clusters.length} clusters from ${clusteringResult.totalChunks} articles`);
 
     // Step 2: Generate summaries for each cluster
     console.log('\n📝 Step 2: Generating cluster summaries...');
