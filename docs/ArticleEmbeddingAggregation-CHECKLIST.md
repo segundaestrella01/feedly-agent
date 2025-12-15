@@ -94,13 +94,14 @@
 
 ---
 
-## Phase 5: Update Clustering & Summarizer
+## Phase 5: Update Clustering & Summarizer ✅
 
 ### 5.1 Clustering Updates
-- [ ] Update `clusterChunks()` in `src/workers/summarizer.ts`
-- [ ] Rename to `clusterArticles()` or update documentation
-- [ ] Each cluster item is now an article, not a chunk
-- [ ] Update `Cluster` type if needed
+- [x] Updated `clusterChunks()` in `src/workers/summarizer.ts` - kept name for backward compatibility
+- [x] Updated all documentation to reference "articles" instead of "chunks"
+- [x] Updated all variable names from `chunk` to `article` where appropriate
+- [x] Added comments noting `Cluster.chunks` now contains articles
+- [x] `Cluster` type kept as-is (field name `chunks` maintained for compatibility)
 
 ### 5.2 Test Clustering
 - [ ] Run clustering on article-level data
