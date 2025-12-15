@@ -101,6 +101,1506 @@
       "url": "https://blog.logrocket.com/feed",
       "category": "development",
       "active": true
+    },
+    {
+      "name": "Codrops",
+      "url": "https://tympanus.net/codrops/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "CSS-Tricks",
+      "url": "https://css-tricks.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "DEV Community",
+      "url": "https://dev.to/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Envato Tuts+ Code",
+      "url": "https://code.tutsplus.com/posts.atom",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker News",
+      "url": "https://hnrss.org/frontpage",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hackernoon",
+      "url": "https://hackernoon.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "SitePoint",
+      "url": "https://www.sitepoint.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Smashing Magazine",
+      "url": "https://www.smashingmagazine.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "1stwebdesigner",
+      "url": "https://1stwebdesigner.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "24 Accessibility",
+      "url": "https://www.24a11y.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "24 ways",
+      "url": "https://feeds.feedburner.com/24ways",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "30 seconds of code",
+      "url": "https://www.30secondsofcode.org/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "A List Apart",
+      "url": "https://alistapart.com/main/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Bits and Pieces",
+      "url": "https://blog.bitsrc.io/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "CodeinWP",
+      "url": "https://www.codeinwp.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "CodyHouse",
+      "url": "https://feeds.feedburner.com/codyhouse/feeds",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Deque",
+      "url": "https://www.deque.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Design Modo",
+      "url": "https://designmodo.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "DZone Web Dev",
+      "url": "https://feeds.dzone.com/webdev",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Frontend Masters",
+      "url": "https://frontendmasters.com/blog/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "GOV.UK Blogs",
+      "url": "https://www.blog.gov.uk/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "InfoQ - JavaScript",
+      "url": "https://feed.infoq.com/javascript/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Kirupa",
+      "url": "https://www.kirupa.com/modular/kirupa.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Level Up Coding",
+      "url": "https://levelup.gitconnected.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Love2Dev",
+      "url": "https://love2dev.com/feed.rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Nielsen Norman Group",
+      "url": "https://www.nngroup.com/feed/rss/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Paciello Group Blog",
+      "url": "https://developer.paciellogroup.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "SitePen",
+      "url": "https://www.sitepen.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Telerik",
+      "url": "https://feeds.telerik.com/blogs",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Treehouse Blog",
+      "url": "https://blog.teamtreehouse.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Twilio - JavaScript",
+      "url": "https://www.twilio.com/blog/tag/javascript/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Vue School",
+      "url": "https://vueschool.io/articles/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Web Performance Calendar",
+      "url": "https://calendar.perfplanet.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "web.dev",
+      "url": "https://web.dev/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Webdesigner Depot",
+      "url": "https://www.webdesignerdepot.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "WebGL Fundamentals",
+      "url": "https://webglfundamentals.org/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Addy Osmani",
+      "url": "https://addyosmani.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Axel Rauschmayer",
+      "url": "https://feeds.feedburner.com/2ality",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Brad Frost",
+      "url": "https://feeds.feedburner.com/brad-frosts-blog",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Christian Heilmann",
+      "url": "https://christianheilmann.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dan Abramov",
+      "url": "https://overreacted.io/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dave Rupert",
+      "url": "https://daverupert.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "David Flanagan",
+      "url": "https://davidflanagan.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ethan Marcotte",
+      "url": "https://ethanmarcotte.com/wrote/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Harry Roberts",
+      "url": "https://feeds.feedburner.com/csswizardry",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jake Archibald",
+      "url": "https://jakearchibald.com/posts.rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jens Oliver Meiert",
+      "url": "https://meiert.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jeremy Keith (Articles)",
+      "url": "https://adactio.com/articles/rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jeremy Keith (Journal)",
+      "url": "https://adactio.com/journal/rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jonathan Snook",
+      "url": "https://snook.ca/jonathan/index.rdf",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Kent C. Dodds",
+      "url": "https://kentcdodds.com/blog/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Lea Verou",
+      "url": "https://lea.verou.me/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mark Otto",
+      "url": "https://markdotto.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mathias Bynens",
+      "url": "https://mathiasbynens.be/notes.atom",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Nicholas C. Zakas",
+      "url": "https://humanwhocodes.com/feeds/blog.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Peter-Paul Koch",
+      "url": "https://www.quirksmode.org/blog/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Philip Walton",
+      "url": "https://feeds.feedburner.com/philipwalton",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Rachel Andrew",
+      "url": "https://rachelandrew.co.uk/archives/rss.php",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Remy Sharp",
+      "url": "https://remysharp.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Sara Soueidan",
+      "url": "https://www.sarasoueidan.com/blog/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stoyan Stefanov",
+      "url": "https://www.phpied.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Tab Atkins",
+      "url": "https://www.xanthir.com/blog/atom/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Tim Kadlec",
+      "url": "https://timkadlec.com/remembers/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Trent Walton",
+      "url": "https://trentwalton.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Una Kravets",
+      "url": "https://una.im/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Zach Leatherman",
+      "url": "https://www.zachleat.com/web/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Aaron Powell",
+      "url": "https://www.aaron-powell.com/posts/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Adam Silver",
+      "url": "https://adamsilver.io/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ajdin Imsirovic",
+      "url": "https://www.codingexercises.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Adrian Roselli",
+      "url": "https://adrianroselli.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ahmed Shadeed",
+      "url": "https://ishadeed.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Alex Trost",
+      "url": "https://frontend.horse/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Andy Bell",
+      "url": "https://piccalil.li/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Anthony Gore",
+      "url": "https://vuejsdevelopers.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Antoine Vastel",
+      "url": "https://antoinevastel.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ashley Nolan",
+      "url": "https://ashleynolan.co.uk/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Austin Gil",
+      "url": "https://stegosource.com/blog/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ben Frain",
+      "url": "https://benfrain.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ben McCormick",
+      "url": "https://benmccormick.org/rss/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ben Myers",
+      "url": "https://blog.benmyers.dev/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Bradley Taunt",
+      "url": "https://bt.ht/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Bram Van Damme",
+      "url": "https://www.bram.us/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Brian Rinaldi",
+      "url": "https://remotesynthesis.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Bruce Lawson",
+      "url": "https://www.brucelawson.co.uk/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Bryan Robinson",
+      "url": "https://bryanlrobinson.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Catalin Rosu",
+      "url": "https://catalin.red/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Chen Hui Jing",
+      "url": "https://www.chenhuijing.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Josh W. Comeau",
+      "url": "https://joshwcomeau.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dan Davies",
+      "url": "https://www.dan-davies.co.uk/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Darek Kay",
+      "url": "https://darekkay.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dave Ceddia",
+      "url": "https://daveceddia.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "David Bushell",
+      "url": "https://dbushell.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dennie Declercq",
+      "url": "https://accessibledreams.home.blog/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Dmitri Pavlutin (frontend-feeds)",
+      "url": "https://dmitripavlutin.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Eldad Bercovici",
+      "url": "https://dutzi.party/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Eric Lawrence",
+      "url": "https://textslashplain.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Eric Meyer",
+      "url": "https://meyerweb.com/eric/thoughts/category/tech/rss2/full/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Erik Runyon",
+      "url": "https://erikrunyon.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Flavio Copes",
+      "url": "https://flaviocopes.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Fredrik Söderström",
+      "url": "https://writingjavascript.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Geoff Graham",
+      "url": "https://geoffgraham.me/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Gift Egwuenu",
+      "url": "https://www.giftegwuenu.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Harry Cresswell",
+      "url": "https://harrycresswell.com/articles/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Harry Wolff",
+      "url": "https://hswolff.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Heydon Pickering",
+      "url": "https://heydonworks.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hidde de Vries",
+      "url": "https://hiddedevries.nl/rss/full/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Holger Bartel",
+      "url": "https://foobartel.com/notes/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hussein Al Hammad",
+      "url": "https://hussein-alhammad.com/blog/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Ire Aderinokun",
+      "url": "https://bitsofco.de/rss/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jack Franklin",
+      "url": "https://www.jackfranklin.co.uk/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "James Sinclair",
+      "url": "https://jrsinclair.com/index.rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jeff Starr",
+      "url": "https://feeds.feedburner.com/perishablepress",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jim Fisher",
+      "url": "https://jameshfisher.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Jonnie Hallman",
+      "url": "https://destroytoday.com/feeds/all",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Kilian Valkhof",
+      "url": "https://kilianvalkhof.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Kitty Giraudel",
+      "url": "https://kittygiraudel.com/rss/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Krasimir Tsonev",
+      "url": "https://krasimirtsonev.com/blog/rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Laura Kalbag",
+      "url": "https://laurakalbag.com/posts/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Lindsey Kopacz",
+      "url": "https://www.a11ywithlindsey.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Louis Lazaris",
+      "url": "https://www.impressivewebs.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Manuel Matuzović",
+      "url": "https://www.matuzo.at/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Marco Zehe",
+      "url": "https://marcozehe.de/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Marcus Hermann",
+      "url": "https://marcus.io/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Marius Schulz",
+      "url": "https://feeds.feedburner.com/mariusschulz",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mark Erikson",
+      "url": "https://blog.isquaredsoftware.com/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Marko Saric",
+      "url": "https://markosaric.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Matej Latin",
+      "url": "https://betterwebtype.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Max Stoiber",
+      "url": "https://mxstbr.blog/feed.atom",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Michael Scharnagl",
+      "url": "https://justmarkup.com/feed/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Michael Thiessen",
+      "url": "https://michaelnthiessen.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Michelle Barker",
+      "url": "https://css-irl.info/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mike Riethmuller",
+      "url": "https://www.madebymike.com.au/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mike Sherov",
+      "url": "https://mike.sherov.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Mike Taylor",
+      "url": "https://miketaylr.com/posts/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Nick Scialli",
+      "url": "https://typeofnan.dev/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Paul Kinlan",
+      "url": "https://paul.kinlan.me/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Phil Nash",
+      "url": "https://philna.sh/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Preston Lamb",
+      "url": "https://www.prestonlamb.com/blog-feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Raghavendra Satish Peri",
+      "url": "https://www.digitala11y.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Raymond Camden",
+      "url": "https://www.raymondcamden.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Reginald Braithwaite",
+      "url": "https://raganwald.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Rob Larsen",
+      "url": "https://htmlcssjavascript.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Robert's Nyman",
+      "url": "https://feeds.feedburner.com/robertnyman",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Robin Osborne",
+      "url": "https://www.robinosborne.co.uk/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Robin Wieruch",
+      "url": "https://www.robinwieruch.de/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Sarah L. Fossheim",
+      "url": "https://fossheim.io/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Scott O'Hara",
+      "url": "https://www.scottohara.me/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Scott Vinkle",
+      "url": "https://scottvinkle.me/blogs/work.atom",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Sean Wang",
+      "url": "https://www.swyx.io/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Serhii Bilyk",
+      "url": "https://catchts.com/api/rss",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Sindre Sorhus",
+      "url": "https://blog.sindresorhus.com/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Sjoerd De Voorhoede",
+      "url": "https://www.voorhoede.nl/blog-feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stephanie Eckles",
+      "url": "https://moderncss.dev/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stefan Judis",
+      "url": "https://www.stefanjudis.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stephanie Stimac",
+      "url": "https://blog.stephaniestimac.com/feed/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stéphanie Walter",
+      "url": "https://stephaniewalter.design/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Stuart Robson",
+      "url": "https://alwaystwisted.com/rss.php",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Swizec Teller",
+      "url": "https://swizec.com/blog/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Tan Li Hau",
+      "url": "https://lihautan.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Tania Rascia",
+      "url": "https://www.taniarascia.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Tim Smith",
+      "url": "https://iamtimsmith.com/feed/",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Trys Mudford",
+      "url": "https://www.trysmudford.com/blog/index.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Valeri Karpov",
+      "url": "https://thecodebarbarian.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Viljami Salminen",
+      "url": "https://viljamis.com/atom.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Zell Liew",
+      "url": "https://zellwk.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Darryl Bayliss",
+      "url": "https://www.darrylbayliss.net/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Nadia Makarevich",
+      "url": "https://www.developerway.com/rss.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "FrontendGeek",
+      "url": "https://www.frontendgeek.com/feed.xml",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - CSS",
+      "url": "https://hackernoon.com/tagged/css/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - Coding",
+      "url": "https://hackernoon.com/tagged/coding/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - Frontend",
+      "url": "https://hackernoon.com/tagged/frontend/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - JavaScript",
+      "url": "https://hackernoon.com/tagged/javascript/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - Programming",
+      "url": "https://hackernoon.com/tagged/programming/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "Hacker Noon - React",
+      "url": "https://hackernoon.com/tagged/react/feed",
+      "category": "frontend",
+      "active": true
+    },
+    {
+      "name": "AdBlock Plus Blog",
+      "url": "https://adblockplus.org/atom/?section=blog",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "AMP Blog",
+      "url": "https://blog.amp.dev/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Brave Blog",
+      "url": "https://brave.com/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Chrome Blog",
+      "url": "https://blog.google/products/chrome/rss/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Chromium Blog",
+      "url": "https://blog.chromium.org/feeds/posts/default",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "DuckDuckGo Blog",
+      "url": "https://spreadprivacy.com/rss/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Freedom Scientific",
+      "url": "https://blog.freedomscientific.com/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Google Developers Blog",
+      "url": "https://developers.googleblog.com/feeds/posts/default",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Google Developers Updates",
+      "url": "https://developer.chrome.com/feeds/blog.xml",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Google Webmaster Central Blog",
+      "url": "https://webmasters.googleblog.com/feeds/posts/default",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Mozilla Accessibility",
+      "url": "https://blog.mozilla.org/accessibility/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Mozilla Blog",
+      "url": "https://blog.mozilla.org/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Mozilla Hacks",
+      "url": "https://hacks.mozilla.org/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "MS Edge Blog",
+      "url": "https://blogs.windows.com/msedgedev/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Opera News",
+      "url": "https://blogs.opera.com/news/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "V8 Blog",
+      "url": "https://v8.dev/blog.atom",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Visual Studio Code",
+      "url": "https://code.visualstudio.com/feed.xml",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "W3C Blog",
+      "url": "https://www.w3.org/blog/feed",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "W3C News",
+      "url": "https://www.w3.org/blog/news/feed",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Web Accessibility Initiative",
+      "url": "https://www.w3.org/WAI/feed.xml",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "WebAIM Blog",
+      "url": "https://webaim.org/blog/feed",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "WebKit Blog",
+      "url": "https://webkit.org/feed/",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "WHATWG Blog",
+      "url": "https://blog.whatwg.org/feed",
+      "category": "browsers",
+      "active": true
+    },
+    {
+      "name": "Angular Blog",
+      "url": "https://blog.angular.io/feed",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Babel.js Blog",
+      "url": "https://babeljs.io/blog/atom.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Bootstrap Blog",
+      "url": "https://blog.getbootstrap.com/feed.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "GSAP Blog",
+      "url": "https://greensock.com/blog/?rss=1",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Inclusive Components",
+      "url": "https://inclusive-components.design/rss/",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Node.js Blog",
+      "url": "https://nodejs.org/en/feed/blog.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "React Blog",
+      "url": "https://reactjs.org/feed.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Sass Blog",
+      "url": "https://sass-lang.com/feed.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Show HN",
+      "url": "https://news.ycombinator.com/showrss",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Svelte Blog",
+      "url": "https://svelte.dev/blog/rss.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Tailwind CSS Blog",
+      "url": "https://tailwindcss.com/feeds/feed.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "Vue.js News",
+      "url": "https://news.vuejs.org/feed.xml",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "The Vue Point",
+      "url": "https://medium.com/feed/the-vue-point",
+      "category": "frameworks",
+      "active": true
+    },
+    {
+      "name": "AMEX Technology",
+      "url": "https://americanexpress.io/feed.xml",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Auth0 Blog",
+      "url": "https://auth0.com/blog/rss.xml",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Axess Lab",
+      "url": "https://axesslab.com/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Bocoup",
+      "url": "https://bocoup.com/feed",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Calibre",
+      "url": "https://calibreapp.com/blog/rss.xml",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Cloud Four",
+      "url": "https://cloudfour.com/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Cloudflare Blog",
+      "url": "https://blog.cloudflare.com/rss/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "CodePen Blog",
+      "url": "https://blog.codepen.io/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "DebugBear Blog",
+      "url": "https://www.debugbear.com/blog/feed/rss",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Etsy Engineering",
+      "url": "https://www.etsy.com/codeascraft/rss",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Facebook Engineering",
+      "url": "https://engineering.fb.com/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Flywheel Blog",
+      "url": "https://getflywheel.com/layout/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "The GitHub Blog",
+      "url": "https://github.blog/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "GitHub Engineering",
+      "url": "https://github.blog/engineering.atom",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Heroku Blog",
+      "url": "https://blog.heroku.com/feed",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Instagram Engineering",
+      "url": "https://instagram-engineering.com/feed",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "LogRocket",
+      "url": "https://blog.logrocket.com/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "MachMetrics Speed Blog",
+      "url": "https://www.machmetrics.com/speed-blog/feed/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Netflix TechBlog",
+      "url": "https://netflixtechblog.com/feed",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "ShimmerCat",
+      "url": "https://www.shimmercat.com/feed.xml",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Shopify Engineering",
+      "url": "https://shopify.engineering/blog.atom",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Speed Matters Blog",
+      "url": "https://speedcurve.com/blog/rss/",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "thoughtbot",
+      "url": "https://feeds.feedburner.com/GiantRobotsSmashingIntoOtherGiantRobots",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Twitter Engineering",
+      "url": "https://blog.twitter.com/engineering/en_us/blog.rss",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Volument Blog",
+      "url": "https://volument.com/rss.xml",
+      "category": "company",
+      "active": true
+    },
+    {
+      "name": "Codrops Collective",
+      "url": "https://tympanus.net/codrops/collective/feed/",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "Echo JS",
+      "url": "https://www.echojs.com/rss",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "Frontend Dogma",
+      "url": "https://frontenddogma.com/feed/",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "HeyDesigner",
+      "url": "https://heydesigner.com/feed/",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "Unicorn Club",
+      "url": "https://unicornclub.dev/feed/",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "Web Development Reading List (WDRL)",
+      "url": "https://wdrl.info/feed",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "Web Platform News",
+      "url": "https://webplatform.news/feed.xml",
+      "category": "news",
+      "active": true
+    },
+    {
+      "name": "/r/css",
+      "url": "https://www.reddit.com/r/css.rss",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "/r/javascript",
+      "url": "https://www.reddit.com/r/javascript.rss",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "/r/reactjs",
+      "url": "https://www.reddit.com/r/reactjs.rss",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "/r/vuejs",
+      "url": "https://www.reddit.com/r/vuejs.rss",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "Stack Overflow - CSS",
+      "url": "https://stackoverflow.com/feeds/tag?tagnames=css&sort=newest",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "Stack Overflow - JavaScript",
+      "url": "https://stackoverflow.com/feeds/tag?tagnames=javascript&sort=newest",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "Stack Overflow - React",
+      "url": "https://stackoverflow.com/feeds/tag?tagnames=reactjs&sort=newest",
+      "category": "forums",
+      "active": true
+    },
+    {
+      "name": "Stack Overflow - Vue",
+      "url": "https://stackoverflow.com/feeds/tag?tagnames=vue.js&sort=newest",
+      "category": "forums",
+      "active": true
     }
   ]
 }
