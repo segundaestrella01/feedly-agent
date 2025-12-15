@@ -697,7 +697,7 @@
       "active": true
     },
     {
-      "name": "Fredrik Söderström",
+      "name": "Fredrik S\u00f6derstr\u00f6m",
       "url": "https://writingjavascript.com/rss.xml",
       "category": "frontend",
       "active": true
@@ -823,7 +823,7 @@
       "active": true
     },
     {
-      "name": "Manuel Matuzović",
+      "name": "Manuel Matuzovi\u0107",
       "url": "https://www.matuzo.at/feed.xml",
       "category": "frontend",
       "active": true
@@ -1033,7 +1033,7 @@
       "active": true
     },
     {
-      "name": "Stéphanie Walter",
+      "name": "St\u00e9phanie Walter",
       "url": "https://stephaniewalter.design/feed/",
       "category": "frontend",
       "active": true
@@ -1600,6 +1600,108 @@
       "name": "Stack Overflow - Vue",
       "url": "https://stackoverflow.com/feeds/tag?tagnames=vue.js&sort=newest",
       "category": "forums",
+      "active": true
+    },
+    {
+      "name": "Smashing Magazine",
+      "url": "https://smashingmagazine.com/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Kilian Valkhof",
+      "url": "https://feeds.feedburner.com/Kilianvalkhof",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Honeybadger Developer Blog",
+      "url": "https://honeybadger.io/blog/feed.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Bitovi Blog",
+      "url": "https://bitovi.com/blog/rss.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Lea Verou (Feedburner)",
+      "url": "https://feeds.feedburner.com/leaverou",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Sara Soueidan Blog",
+      "url": "https://sarasoueidan.com/blog/index.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Matuzo Blog",
+      "url": "https://matuzo.at/feed_all.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Speckyboy",
+      "url": "https://speckyboy.com/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "AWS Front-End Web & Mobile",
+      "url": "https://aws.amazon.com/blogs/mobile/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Frontend Undefined",
+      "url": "https://frontendundefined.com/feed/feed.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Frank M Taylor Blog - Front-end",
+      "url": "https://blog.frankmtaylor.com/category/front-end/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Lea Verou Blog",
+      "url": "https://lea.verou.me/feed.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "webrtcHacks",
+      "url": "https://webrtchacks.com/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Codemotion Magazine - Frontend",
+      "url": "https://codemotion.com/magazine/frontend/feed",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Free Frontend",
+      "url": "https://freefrontend.com/index.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Nikita Hlopov's Frontend Dev Blog",
+      "url": "https://nikitahl.com/feed.xml",
+      "category": "feedspot-frontend",
+      "active": true
+    },
+    {
+      "name": "Code Frontend",
+      "url": "https://codefrontend.com/rss",
+      "category": "feedspot-frontend",
       "active": true
     }
   ]
