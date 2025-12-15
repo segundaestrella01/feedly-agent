@@ -188,3 +188,74 @@ export interface MetadataCollectionStats {
     chars: number;
   };
 }
+
+// ============================================================================
+// Article-Level Embedding Types (Aggregated from Chunks)
+// ============================================================================
+
+/**
+ * Metadata for an article-level embedding (aggregated from chunks)
+ * Unlike ChunkMetadata, this represents the entire article, not a single chunk.
+ */
+export interface ArticleMetadata {
+  // Source information
+  source: string;           // RSS feed source
+  source_url: string;       // Original article URL (unique identifier)
+  title: string;            // Article title
+  published_date: string;   // ISO date string
+
+  // Aggregated chunk information
+  chunk_count: number;      // Number of chunks that were aggregated
+  total_word_count: number; // Sum of word counts from all chunks
+  total_char_count: number; // Sum of char counts from all chunks
+
+  // Content classification
+  categories?: string[];    // Feed categories
+  tags?: string[];          // Extracted tags
+  content_type: 'article';  // Always 'article' for aggregated content
+
+  // Processing metadata
+  processed_date: string;   // When article was first processed
+  embedded_date: string;    // When aggregated embedding was generated
+  article_id: string;       // Unique article identifier (hash of source_url)
+
+  // Additional metadata for enhanced search
+  domain?: string;          // Extract domain from source_url
+  language?: string;        // Detected content language
+  sentiment?: 'positive' | 'negative' | 'neutral'; // Basic sentiment
+  topic_keywords?: string[]; // AI-extracted topic keywords
+}
+
+/**
+ * An article with its aggregated embedding
+ * This is the primary unit stored in the vector database
+ */
+export interface ArticleWithEmbedding {
+  id: string;               // article_id (hash of source_url)
+  content: string;          // Combined content from all chunks (may be truncated)
+  embedding?: number[];     // Aggregated embedding vector
+  metadata: ArticleMetadata;
+}
+
+/**
+ * Query result for article-level queries
+ */
+export interface ArticleQueryResult {
+  id: string;
+  content: string;
+  metadata: ArticleMetadata;
+  distance: number;
+  score: number;            // 1 - distance (higher is more similar)
+}
+
+/**
+ * Result of the embedding aggregation process
+ */
+export interface AggregationResult {
+  articleId: string;
+  aggregatedEmbedding: number[];
+  combinedContent: string;
+  chunkCount: number;
+  totalWordCount: number;
+  totalCharCount: number;
+}
